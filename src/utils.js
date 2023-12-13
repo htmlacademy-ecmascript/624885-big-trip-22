@@ -6,6 +6,27 @@ function humanizeEventDate(eventDate) {
   return eventDate ? dayjs(eventDate).format(DATE_FORMAT) : '';
 }
 
+function createDateTimeString(eventDate) {
+  return eventDate ? dayjs(eventDate).format('DD/MM/YY HH:mm') : '';
+}
+
+function createTimeString(eventDate) {
+  return eventDate ? dayjs(eventDate).format('HH:mm') : '';
+}
+
+function getDuration(startTime, endTime) {
+  const totalMinuts = dayjs(endTime).diff(startTime, 'm');
+  const totalHours = Math.floor(totalMinuts / 60);
+  const minuts = totalMinuts % 60;
+  const days = Math.floor(totalHours / 24);
+  const hours = totalHours % 24;
+  let returnString = '';
+  returnString += days ? `${days}D ` : '';
+  returnString += hours ? `${hours}H ` : '';
+  returnString += `${minuts}M`;
+  return returnString;
+}
+
 function getRandomArrayElement(items) {
   return items[Math.floor(Math.random() * items.length)];
 }
@@ -16,4 +37,11 @@ const getRandomNumber = (from, to) => {
   return Math.round(Math.random() * (upper - lower) + lower);
 };
 
-export { getRandomArrayElement, getRandomNumber, humanizeEventDate };
+export {
+  getRandomArrayElement,
+  getRandomNumber,
+  humanizeEventDate,
+  createDateTimeString,
+  createTimeString,
+  getDuration
+};

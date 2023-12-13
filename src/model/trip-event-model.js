@@ -1,11 +1,14 @@
-import { getMockEvent } from '../mock/trip-event.js';
-
-const TRIP_EVENT_COUNTER = 4;
+import { getMockOffers, getMockTripEvents } from '../mock/trip-event.js';
 
 export default class TripEventModel {
-  tripEvents = Array.from({length: TRIP_EVENT_COUNTER}, getMockEvent);
+  tripEvents = getMockTripEvents();
+  offers = getMockOffers();
 
   getTripEvents() {
     return this.tripEvents;
+  }
+
+  getOffers() {
+    return this.offers;
   }
 }
