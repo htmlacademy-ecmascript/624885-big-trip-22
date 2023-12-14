@@ -150,6 +150,6 @@ const mockTripEvents = [
 ];
 
 const getMockTripEvents = () => mockTripEvents;
-const getMockOffers = () => offers;
+const getMockOffersList = () => offers;
 
-export { getMockTripEvents, getMockOffers };
+export { getMockTripEvents, getMockOffersList };

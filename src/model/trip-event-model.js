@@ -1,14 +1,14 @@
-import { getMockOffers, getMockTripEvents } from '../mock/trip-event.js';
+import { getMockOffersList, getMockTripEvents } from '../mock/trip-event.js';
 
 export default class TripEventModel {
   tripEvents = getMockTripEvents();
-  offers = getMockOffers();
+  offersList = getMockOffersList();
 
   getTripEvents() {
     return this.tripEvents;
   }
 
-  getOffers() {
-    return this.offers;
+  getOffersList() {
+    return this.offersList;
   }
 }

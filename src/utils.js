@@ -1,17 +1,19 @@
 import dayjs from 'dayjs';
 
 const DATE_FORMAT = 'MMM D';
+const DATE_TIME_FORMAT = 'DD/MM/YY HH:mm';
+const TIME_FORMAT = 'HH:mm';
 
 function humanizeEventDate(eventDate) {
   return eventDate ? dayjs(eventDate).format(DATE_FORMAT) : '';
 }
 
 function createDateTimeString(eventDate) {
-  return eventDate ? dayjs(eventDate).format('DD/MM/YY HH:mm') : '';
+  return eventDate ? dayjs(eventDate).format(DATE_TIME_FORMAT) : '';
 }
 
 function createTimeString(eventDate) {
-  return eventDate ? dayjs(eventDate).format('HH:mm') : '';
+  return eventDate ? dayjs(eventDate).format(TIME_FORMAT) : '';
 }
 
 function getDuration(startTime, endTime) {
