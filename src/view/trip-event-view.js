@@ -11,17 +11,17 @@ function createOffersTemplate(offersFiltered) {
   ).join('');
 }
 
-function createTripEventTemplate(tripEvent, offersList) {
-  const {type, destination, startTime, endTime, price, offers, favorite } = tripEvent;
+function createTripEventTemplate(tripEvent, offersList, destinationName) {
+  const {type, startTime, endTime, price, offers, favorite } = tripEvent;
   const offersFiltered = offersList.filter((item) => item.type === type && offers.includes(item.id));
   const isFavorite = favorite ? 'event__favorite-btn--active' : '';
   return `<li class="trip-events__item">
     <div class="event">
       <time class="event__date" datetime="${startTime}">${humanizeEventDate(startTime)}</time>
       <div class="event__type">
-        <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
+        <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
       </div>
-      <h3 class="event__title">${type} ${destination}</h3>
+      <h3 class="event__title">${type} ${destinationName}</h3>
       <div class="event__schedule">
         <p class="event__time">
           <time class="event__start-time" datetime="2019-03-18T12:25">${createTimeString(startTime)}</time>
@@ -51,13 +51,14 @@ function createTripEventTemplate(tripEvent, offersList) {
 }
 
 export default class TripEventView {
-  constructor(tripEvent, offers) {
+  constructor(tripEvent, offersList, destination) {
     this.tripEvent = tripEvent;
-    this.offers = offers;
+    this.offersList = offersList;
+    this.destination = destination;
   }
 
   getTemplate() {
-    return createTripEventTemplate(this.tripEvent, this.offers);
+    return createTripEventTemplate(this.tripEvent, this.offersList, this.destination.name);
   }
 
   getElement() {

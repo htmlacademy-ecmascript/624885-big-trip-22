@@ -31,11 +31,18 @@ function getRandomArrayElement(items) {
   return items[Math.floor(Math.random() * items.length)];
 }
 
-const getRandomNumber = (from, to) => {
+function getRandomNumber(from, to) {
   const lower = Math.ceil(Math.min(Math.abs(from), Math.abs(to)));
   const upper = Math.floor(Math.max(Math.abs(to), Math.abs(from)));
   return Math.round(Math.random() * (upper - lower) + lower);
-};
+}
+
+function incrementCounter(startFrom) {
+  let counter = startFrom;
+  return function () {
+    return counter++;
+  };
+}
 
 export {
   getRandomArrayElement,
@@ -43,5 +50,6 @@ export {
   humanizeEventDate,
   createDateTimeString,
   createTimeString,
-  getDuration
+  getDuration,
+  incrementCounter
 };
