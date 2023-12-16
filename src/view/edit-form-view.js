@@ -73,8 +73,8 @@ function createEventTypeTemplate(tripEvent) {
   </div>`;
 }
 
-function createOffersTemplate(offers, offersFiltered) {
-  return offersFiltered.map(({id, title, price, type}) =>
+function createOffersTemplate(offers, offersList) {
+  return offersList.offers.map(({id, title, price, type}) =>
     `<div class="event__available-offers">
       <div class="event__offer-selector">
         <input
@@ -101,13 +101,13 @@ function createDestinationOptionsTemplate(destinationsList) {
   return destinationsList.map((destination) => `<option value="${destination.name}"></option>`).join('');
 }
 
-function createEditFormTemplate(tripEvent, offersList, destinationsList, currentDestination) {
+function createEditFormTemplate(tripEvent, currentOffersList, destinationsList, currentDestination) {
   const { type, startTime, endTime, price, offers} = tripEvent;
   const eventTypeTemplate = createEventTypeTemplate(tripEvent);
   const startDate = createDateTimeString(startTime);
   const endDate = createDateTimeString(endTime);
-  const offersFiltered = offersList.filter((item) => item.type === type);
   const destinationOptionsTemplate = createDestinationOptionsTemplate(destinationsList);
+  const offersTemplate = createOffersTemplate(offers, currentOffersList);
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -148,7 +148,7 @@ function createEditFormTemplate(tripEvent, offersList, destinationsList, current
       <section class="event__details">
         <section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-          ${createOffersTemplate(offers, offersFiltered)}
+          ${offersTemplate}
         </section>
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>

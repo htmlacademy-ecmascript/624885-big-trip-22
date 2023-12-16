@@ -21,4 +21,17 @@ const EVENT_DESCRIPTIONS = [
   'In rutrum ac purus sit amet tempus.'
 ];
 
-export { MINUTS_IN_HOUR, HOURS_IN_DAY,DATE_FORMAT, DATE_TIME_FORMAT, TIME_FORMAT, CITIES, EVENT_DESCRIPTIONS };
+const EVENT_TYPES = [
+  'taxi', 'bus', 'train', 'ship', 'drive',
+  'flight', 'check-in', 'sightseeing', 'restaurant'
+];
+
+export {
+  MINUTS_IN_HOUR,
+  HOURS_IN_DAY,
+  DATE_FORMAT,
+  DATE_TIME_FORMAT,
+  TIME_FORMAT,
+  CITIES,
+  EVENT_DESCRIPTIONS,
+  EVENT_TYPES };
