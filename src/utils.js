@@ -1,8 +1,5 @@
 import dayjs from 'dayjs';
-
-const DATE_FORMAT = 'MMM D';
-const DATE_TIME_FORMAT = 'DD/MM/YY HH:mm';
-const TIME_FORMAT = 'HH:mm';
+import { HOURS_IN_DAY, MINUTS_IN_HOUR, DATE_FORMAT, DATE_TIME_FORMAT, TIME_FORMAT } from './constants';
 
 function humanizeEventDate(eventDate) {
   return eventDate ? dayjs(eventDate).format(DATE_FORMAT) : '';
@@ -18,10 +15,11 @@ function createTimeString(eventDate) {
 
 function getDuration(startTime, endTime) {
   const totalMinuts = dayjs(endTime).diff(startTime, 'm');
-  const totalHours = Math.floor(totalMinuts / 60);
-  const minuts = totalMinuts % 60;
-  const days = Math.floor(totalHours / 24);
-  const hours = totalHours % 24;
+  const totalHours = Math.floor(totalMinuts / MINUTS_IN_HOUR);
+  const minuts = totalMinuts % MINUTS_IN_HOUR;
+  const days = Math.floor(totalHours / HOURS_IN_DAY);
+  const hours = totalHours % HOURS_IN_DAY;
+
   let returnString = '';
   returnString += days ? `${days}D ` : '';
   returnString += hours ? `${hours}H ` : '';
