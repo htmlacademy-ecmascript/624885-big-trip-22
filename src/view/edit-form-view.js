@@ -1,15 +1,6 @@
-import {createElement} from '../render.js';
+import { createElement } from '../render.js';
 import { createDateTimeString } from '../utils.js';
-
-const BLANK_TRIP_EVENT = {
-  type: 'flight',
-  destination: '',
-  startTime: new Date(),
-  endTime: new Date(),
-  price: 0,
-  favorite: false,
-  offers: []
-};
+import { BLANK_TRIP_EVENT } from '../constants.js';
 
 function createEventTypeTemplate(tripEvent) {
   const { type } = tripEvent;

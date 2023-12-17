@@ -26,6 +26,16 @@ const EVENT_TYPES = [
   'flight', 'check-in', 'sightseeing', 'restaurant'
 ];
 
+const BLANK_TRIP_EVENT = {
+  type: 'flight',
+  destination: '',
+  startTime: new Date(),
+  endTime: new Date(),
+  price: 0,
+  favorite: false,
+  offers: []
+};
+
 export {
   MINUTS_IN_HOUR,
   HOURS_IN_DAY,
@@ -34,4 +44,5 @@ export {
   TIME_FORMAT,
   CITIES,
   EVENT_DESCRIPTIONS,
-  EVENT_TYPES };
+  EVENT_TYPES,
+  BLANK_TRIP_EVENT };

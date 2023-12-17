@@ -1,8 +1,9 @@
-import {render} from '../render.js';
+import { render } from '../render.js';
 import TripEventListView from '../view/trip-event-list-view.js';
 import SortView from '../view/sort-view.js';
 import TripEventView from '../view/trip-event-view.js';
 import EditFormView from '../view/edit-form-view.js';
+import { BLANK_TRIP_EVENT } from '../constants.js';
 
 export default class TripEventsPresenter {
   tripEventListComponent = new TripEventListView();
@@ -33,6 +34,11 @@ export default class TripEventsPresenter {
       render(new TripEventView(this.tripEvents[i], this.offersList, destination), this.tripEventListComponent.getElement());
     }
 
-    //render(new EditFormView(), this.tripEventListComponent.getElement());
+    render(new EditFormView(
+      BLANK_TRIP_EVENT,
+      this.offersModel.getByType(BLANK_TRIP_EVENT.type),
+      this.destinationsList,
+      this.destinationsList[0]
+    ), this.tripEventListComponent.getElement());
   }
 }
