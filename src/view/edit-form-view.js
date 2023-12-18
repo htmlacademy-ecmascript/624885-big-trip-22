@@ -1,15 +1,6 @@
-import {createElement} from '../render.js';
+import { createElement } from '../render.js';
 import { createDateTimeString } from '../utils.js';
-
-const BLANK_TRIP_EVENT = {
-  type: 'flight',
-  destination: '',
-  startTime: new Date(),
-  endTime: new Date(),
-  price: 0,
-  favorite: false,
-  offers: []
-};
+import { BLANK_TRIP_EVENT } from '../constants.js';
 
 function createEventTypeTemplate(tripEvent) {
   const { type } = tripEvent;
@@ -73,8 +64,8 @@ function createEventTypeTemplate(tripEvent) {
   </div>`;
 }
 
-function createOffersTemplate(offers, offersFiltered) {
-  return offersFiltered.map(({id, title, price, type}) =>
+function createOffersTemplate(offers, offersList) {
+  return offersList.offers.map(({id, title, price, type}) =>
     `<div class="event__available-offers">
       <div class="event__offer-selector">
         <input
@@ -94,15 +85,20 @@ function createOffersTemplate(offers, offersFiltered) {
 }
 
 function createDestinationPicturesTemplate(pictures) {
-  return pictures.map((url) => `<img class="event__photo" src="${url}" alt="Event photo">`).join('');
+  return pictures.map((picture) => `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`).join('');
 }
 
-function createEditFormTemplate(tripEvent, offersList) {
-  const { type, destination, startTime, endTime, price, offers} = tripEvent;
+function createDestinationOptionsTemplate(destinationsList) {
+  return destinationsList.map((destination) => `<option value="${destination.name}"></option>`).join('');
+}
+
+function createEditFormTemplate(tripEvent, currentOffersList, destinationsList, currentDestination) {
+  const { type, startTime, endTime, price, offers} = tripEvent;
   const eventTypeTemplate = createEventTypeTemplate(tripEvent);
   const startDate = createDateTimeString(startTime);
   const endDate = createDateTimeString(endTime);
-  const offersFiltered = offersList.filter((item) => item.type === type);
+  const destinationOptionsTemplate = createDestinationOptionsTemplate(destinationsList);
+  const offersTemplate = createOffersTemplate(offers, currentOffersList);
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -112,11 +108,9 @@ function createEditFormTemplate(tripEvent, offersList) {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name || ''}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${currentDestination.name || ''}" list="destination-list-1">
           <datalist id="destination-list-1">
-            <option value="Amsterdam"></option>
-            <option value="Geneva"></option>
-            <option value="Chamonix"></option>
+            ${destinationOptionsTemplate}
           </datalist>
         </div>
 
@@ -145,14 +139,14 @@ function createEditFormTemplate(tripEvent, offersList) {
       <section class="event__details">
         <section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-          ${createOffersTemplate(offers, offersFiltered)}
+          ${offersTemplate}
         </section>
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${destination.description || ''}</p>
+          <p class="event__destination-description">${currentDestination.description || ''}</p>
           <div class="event__photos-container">
             <div class="event__photos-tape">
-              ${createDestinationPicturesTemplate(destination.pictures || [])}
+              ${createDestinationPicturesTemplate(currentDestination.pictures || [])}
             </div>
           </div>
         </section>
@@ -162,13 +156,15 @@ function createEditFormTemplate(tripEvent, offersList) {
 }
 
 export default class EditFormView {
-  constructor (tripEvent = BLANK_TRIP_EVENT, offers = []) {
+  constructor (tripEvent = BLANK_TRIP_EVENT, offersList = [], destinationsList, currentDestination = {}) {
     this.tripEvent = tripEvent;
-    this.offers = offers;
+    this.offersList = offersList;
+    this.destinationsList = destinationsList;
+    this.currentDestination = currentDestination;
   }
 
   getTemplate() {
-    return createEditFormTemplate(this.tripEvent, this.offers);
+    return createEditFormTemplate(this.tripEvent, this.offersList, this.destinationsList, this.currentDestination);
   }
 
   getElement() {
