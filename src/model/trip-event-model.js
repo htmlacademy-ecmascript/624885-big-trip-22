@@ -3,7 +3,7 @@ import { getMockTripEvents } from '../mock/trip-event.js';
 export default class TripEventModel {
   tripEvents = getMockTripEvents();
 
-  getTripEvents() {
+  get() {
     return this.tripEvents;
   }
 }

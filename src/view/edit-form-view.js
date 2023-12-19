@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { createDateTimeString } from '../utils.js';
 import { BLANK_TRIP_EVENT } from '../constants.js';
 
@@ -155,27 +155,21 @@ function createEditFormTemplate(tripEvent, currentOffersList, destinationsList, 
   </li>`;
 }
 
-export default class EditFormView {
+export default class EditFormView extends AbstractView {
+  #tripEvent = null;
+  #offersList = null;
+  #destinationsList = null;
+  #currentDestination = null;
+
   constructor (tripEvent = BLANK_TRIP_EVENT, offersList = [], destinationsList, currentDestination = {}) {
-    this.tripEvent = tripEvent;
-    this.offersList = offersList;
-    this.destinationsList = destinationsList;
-    this.currentDestination = currentDestination;
+    super();
+    this.#tripEvent = tripEvent;
+    this.#offersList = offersList;
+    this.#destinationsList = destinationsList;
+    this.#currentDestination = currentDestination;
   }
 
-  getTemplate() {
-    return createEditFormTemplate(this.tripEvent, this.offersList, this.destinationsList, this.currentDestination);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createEditFormTemplate(this.#tripEvent, this.#offersList, this.#destinationsList, this.#currentDestination);
   }
 }
