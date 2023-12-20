@@ -14,9 +14,9 @@ function createOffersTemplate(offersFiltered) {
 function createTripEventTemplate(tripEvent, offersList, destination) {
   const {type, startTime, endTime, price, offers, favorite } = tripEvent;
   const offersFiltered = offersList.find((item) => item.type === type);
-  const offers2 = offersFiltered.offers.filter((item) => offers.includes(item.id));
+  const offersActivated = offersFiltered.offers.filter((item) => offers.includes(item.id));
   const { name } = destination;
-  const offersTemplate = createOffersTemplate(offers2);
+  const offersTemplate = createOffersTemplate(offersActivated);
   const isFavorite = favorite ? 'event__favorite-btn--active' : '';
   return `<li class="trip-events__item">
     <div class="event">
@@ -57,15 +57,24 @@ export default class TripEventView extends AbstractView {
   #tripEvent = null;
   #offersList = null;
   #destination = null;
+  #handleEditClick = null;
 
-  constructor(tripEvent, offersList, destination) {
+  constructor({tripEvent, offersList, destination, onEditClick}) {
     super();
     this.#tripEvent = tripEvent;
     this.#offersList = offersList;
     this.#destination = destination;
+    this.#handleEditClick = onEditClick;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
   }
 
   get template() {
     return createTripEventTemplate(this.#tripEvent, this.#offersList, this.#destination);
   }
+
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 }

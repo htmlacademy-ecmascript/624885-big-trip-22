@@ -7,7 +7,7 @@ function createEventTypeTemplate(tripEvent) {
   return `<div class="event__type-wrapper">
     <label class="event__type  event__type-btn" for="event-type-toggle-1">
       <span class="visually-hidden">Choose event type</span>
-      <img class="event__type-icon" width="17" height="17" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
+      <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
     </label>
     <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -157,19 +157,28 @@ function createEditFormTemplate(tripEvent, currentOffersList, destinationsList, 
 
 export default class EditFormView extends AbstractView {
   #tripEvent = null;
-  #offersList = null;
+  #offersFiltered = null;
   #destinationsList = null;
   #currentDestination = null;
+  #handleFormSubmit = null;
 
-  constructor (tripEvent = BLANK_TRIP_EVENT, offersList = [], destinationsList, currentDestination = {}) {
+  constructor ({tripEvent = BLANK_TRIP_EVENT, offersFiltered = [], destinationsList, destination = {}, onFormSubmit}) {
     super();
     this.#tripEvent = tripEvent;
-    this.#offersList = offersList;
+    this.#offersFiltered = offersFiltered;
     this.#destinationsList = destinationsList;
-    this.#currentDestination = currentDestination;
+    this.#currentDestination = destination;
+    this.#handleFormSubmit = onFormSubmit;
+
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
   }
 
   get template() {
-    return createEditFormTemplate(this.#tripEvent, this.#offersList, this.#destinationsList, this.#currentDestination);
+    return createEditFormTemplate(this.#tripEvent, this.#offersFiltered, this.#destinationsList, this.#currentDestination);
   }
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit();
+  };
 }
