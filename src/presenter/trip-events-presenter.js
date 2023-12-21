@@ -68,7 +68,11 @@ export default class TripEventsPresenter {
       onFormSubmit: () => {
         replaceFormToCard();
         document.removeEventListener('keydown', escKeyDownHandler);
-      }
+      },
+      onCloseClick: () => {
+        replaceFormToCard();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      },
     });
 
     function replaceCardToForm() {

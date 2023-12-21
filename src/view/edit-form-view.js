@@ -161,16 +161,19 @@ export default class EditFormView extends AbstractView {
   #destinationsList = null;
   #currentDestination = null;
   #handleFormSubmit = null;
+  #handleCloseClick = null;
 
-  constructor ({tripEvent = BLANK_TRIP_EVENT, offersFiltered = [], destinationsList, destination = {}, onFormSubmit}) {
+  constructor ({tripEvent = BLANK_TRIP_EVENT, offersFiltered = [], destinationsList, destination = {}, onFormSubmit, onCloseClick}) {
     super();
     this.#tripEvent = tripEvent;
     this.#offersFiltered = offersFiltered;
     this.#destinationsList = destinationsList;
     this.#currentDestination = destination;
     this.#handleFormSubmit = onFormSubmit;
+    this.#handleCloseClick = onCloseClick;
 
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeClickHandler);
   }
 
   get template() {
@@ -180,5 +183,10 @@ export default class EditFormView extends AbstractView {
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
     this.#handleFormSubmit();
+  };
+
+  #closeClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleCloseClick();
   };
 }
