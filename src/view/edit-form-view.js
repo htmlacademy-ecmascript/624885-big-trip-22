@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { createDateTimeString } from '../utils.js';
 import { BLANK_TRIP_EVENT } from '../constants.js';
 
@@ -7,7 +7,7 @@ function createEventTypeTemplate(tripEvent) {
   return `<div class="event__type-wrapper">
     <label class="event__type  event__type-btn" for="event-type-toggle-1">
       <span class="visually-hidden">Choose event type</span>
-      <img class="event__type-icon" width="17" height="17" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
+      <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
     </label>
     <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -155,27 +155,38 @@ function createEditFormTemplate(tripEvent, currentOffersList, destinationsList, 
   </li>`;
 }
 
-export default class EditFormView {
-  constructor (tripEvent = BLANK_TRIP_EVENT, offersList = [], destinationsList, currentDestination = {}) {
-    this.tripEvent = tripEvent;
-    this.offersList = offersList;
-    this.destinationsList = destinationsList;
-    this.currentDestination = currentDestination;
+export default class EditFormView extends AbstractView {
+  #tripEvent = null;
+  #offersFiltered = null;
+  #destinationsList = null;
+  #currentDestination = null;
+  #handleFormSubmit = null;
+  #handleCloseClick = null;
+
+  constructor ({tripEvent = BLANK_TRIP_EVENT, offersFiltered = [], destinationsList, destination = {}, onFormSubmit, onCloseClick}) {
+    super();
+    this.#tripEvent = tripEvent;
+    this.#offersFiltered = offersFiltered;
+    this.#destinationsList = destinationsList;
+    this.#currentDestination = destination;
+    this.#handleFormSubmit = onFormSubmit;
+    this.#handleCloseClick = onCloseClick;
+
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeClickHandler);
   }
 
-  getTemplate() {
-    return createEditFormTemplate(this.tripEvent, this.offersList, this.destinationsList, this.currentDestination);
+  get template() {
+    return createEditFormTemplate(this.#tripEvent, this.#offersFiltered, this.#destinationsList, this.#currentDestination);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit();
+  };
 
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #closeClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleCloseClick();
+  };
 }

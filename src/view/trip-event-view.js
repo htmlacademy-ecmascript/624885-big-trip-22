@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeEventDate, createTimeString, getDuration } from '../utils.js';
 
 function createOffersTemplate(offersFiltered) {
@@ -11,11 +11,12 @@ function createOffersTemplate(offersFiltered) {
   ).join('');
 }
 
-function createTripEventTemplate(tripEvent, offersList, destinationName) {
+function createTripEventTemplate(tripEvent, offersList, destination) {
   const {type, startTime, endTime, price, offers, favorite } = tripEvent;
   const offersFiltered = offersList.find((item) => item.type === type);
-  const offers2 = offersFiltered.offers.filter((item) => offers.includes(item.id));
-  const offersTemplate = createOffersTemplate(offers2);
+  const offersActivated = offersFiltered.offers.filter((item) => offers.includes(item.id));
+  const { name } = destination;
+  const offersTemplate = createOffersTemplate(offersActivated);
   const isFavorite = favorite ? 'event__favorite-btn--active' : '';
   return `<li class="trip-events__item">
     <div class="event">
@@ -23,7 +24,7 @@ function createTripEventTemplate(tripEvent, offersList, destinationName) {
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
       </div>
-      <h3 class="event__title">${type} ${destinationName}</h3>
+      <h3 class="event__title">${type} ${name}</h3>
       <div class="event__schedule">
         <p class="event__time">
           <time class="event__start-time" datetime="2019-03-18T12:25">${createTimeString(startTime)}</time>
@@ -52,26 +53,28 @@ function createTripEventTemplate(tripEvent, offersList, destinationName) {
   </li>`;
 }
 
-export default class TripEventView {
-  constructor(tripEvent, offersList, destination) {
-    this.tripEvent = tripEvent;
-    this.offersList = offersList;
-    this.destination = destination;
+export default class TripEventView extends AbstractView {
+  #tripEvent = null;
+  #offersList = null;
+  #destination = null;
+  #handleEditClick = null;
+
+  constructor({tripEvent, offersList, destination, onEditClick}) {
+    super();
+    this.#tripEvent = tripEvent;
+    this.#offersList = offersList;
+    this.#destination = destination;
+    this.#handleEditClick = onEditClick;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
   }
 
-  getTemplate() {
-    return createTripEventTemplate(this.tripEvent, this.offersList, this.destination.name);
+  get template() {
+    return createTripEventTemplate(this.#tripEvent, this.#offersList, this.#destination);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 }

@@ -1,9 +1,13 @@
 import { getMockTripEvents } from '../mock/trip-event.js';
 
 export default class TripEventModel {
-  tripEvents = getMockTripEvents();
+  #tripEvents = [];
 
-  getTripEvents() {
-    return this.tripEvents;
+  constructor() {
+    this.#tripEvents = getMockTripEvents();
+  }
+
+  get tripEvents() {
+    return this.#tripEvents;
   }
 }
