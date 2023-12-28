@@ -41,7 +41,7 @@ export default class TripEventsPresenter {
     const escKeyDownHandler = (evt) => {
       if (evt.key === 'Escape') {
         evt.preventDefault();
-        replaceFormToCard();
+        replaceFormToEvent();
         document.removeEventListener('keydown', escKeyDownHandler);
       }
     };
@@ -66,11 +66,11 @@ export default class TripEventsPresenter {
       destinationsList,
       destination,
       onFormSubmit: () => {
-        replaceFormToCard();
+        replaceFormToEvent();
         document.removeEventListener('keydown', escKeyDownHandler);
       },
       onCloseClick: () => {
-        replaceFormToCard();
+        replaceFormToEvent();
         document.removeEventListener('keydown', escKeyDownHandler);
       },
     });
@@ -79,7 +79,7 @@ export default class TripEventsPresenter {
       replace(editFormComponent, tripEventComponent);
     }
 
-    function replaceFormToCard() {
+    function replaceFormToEvent() {
       replace(tripEventComponent, editFormComponent);
     }
 
