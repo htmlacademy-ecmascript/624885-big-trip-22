@@ -74,6 +74,42 @@ const EmptyMessage = {
   [FilterType.FUTURE]: 'There are no future events now',
 };
 
+const SortType = {
+  DAY: 'day',
+  EVENT: 'event',
+  TIME: 'time',
+  PRICE: 'price',
+  OFFERS: 'offers'
+};
+
+const SORTS = [
+  {
+    type: SortType.DAY,
+    isChoosen: true,
+    isDisabled: false
+  },
+  {
+    type: SortType.EVENT,
+    isChoosen: false,
+    isDisabled: true
+  },
+  {
+    type: SortType.TIME,
+    isChoosen: false,
+    isDisabled: false
+  },
+  {
+    type: SortType.PRICE,
+    isChoosen: false,
+    isDisabled: false
+  },
+  {
+    type: SortType.OFFERS,
+    isChoosen: false,
+    isDisabled: true
+  },
+];
+
 export {
   MINUTS_IN_HOUR,
   HOURS_IN_DAY,
@@ -86,5 +122,6 @@ export {
   BLANK_TRIP_EVENT,
   FILTERS,
   EmptyMessage,
-  FilterType
+  FilterType,
+  SORTS
 };
