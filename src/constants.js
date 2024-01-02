@@ -46,24 +46,24 @@ const FilterType = {
 
 const FILTERS = [
   {
-    name: FilterType.EVERYTHING,
+    type: FilterType.EVERYTHING,
     isChoosen: true,
-    idDisabled: false
+    isDisabled: false
   },
   {
-    name: FilterType.PAST,
+    type: FilterType.FUTURE,
     isChoosen: false,
-    idDisabled: false
+    isDisabled: true
   },
   {
-    name: FilterType.PRESENT,
+    type: FilterType.PRESENT,
     isChoosen: false,
-    idDisabled: false
+    isDisabled: false
   },
   {
-    name: FilterType.FUTURE,
+    type: FilterType.PAST,
     isChoosen: false,
-    idDisabled: false
+    isDisabled: false
   },
 ];
 
