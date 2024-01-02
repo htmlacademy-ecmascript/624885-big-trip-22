@@ -8,6 +8,7 @@ const TIME_FORMAT = 'HH:mm';
 
 const CITIES = [
   'Amsterdam', 'Geneva', 'Paris', 'Moscow', 'New York', 'London', 'Berlin', 'Madrid', 'Oslo', 'Helsinki' ];
+
 const EVENT_DESCRIPTIONS = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   'Cras aliquet varius magna, non porta ligula feugiat eget.',
@@ -36,6 +37,43 @@ const BLANK_TRIP_EVENT = {
   offers: []
 };
 
+const FilterType = {
+  EVERYTHING: 'everything',
+  PAST: 'past',
+  PRESENT: 'present',
+  FUTURE: 'future'
+};
+
+const FILTERS = [
+  {
+    name: FilterType.EVERYTHING,
+    isChoosen: true,
+    idDisabled: false
+  },
+  {
+    name: FilterType.PAST,
+    isChoosen: false,
+    idDisabled: false
+  },
+  {
+    name: FilterType.PRESENT,
+    isChoosen: false,
+    idDisabled: false
+  },
+  {
+    name: FilterType.FUTURE,
+    isChoosen: false,
+    idDisabled: false
+  },
+];
+
+const EmptyMessage = {
+  [FilterType.EVERYTHING]: 'Click New Event to create your first point',
+  [FilterType.PAST]: 'There are no past events now',
+  [FilterType.PRESENT]: 'There are no present events now',
+  [FilterType.FUTURE]: 'There are no future events now',
+};
+
 export {
   MINUTS_IN_HOUR,
   HOURS_IN_DAY,
@@ -45,4 +83,8 @@ export {
   CITIES,
   EVENT_DESCRIPTIONS,
   EVENT_TYPES,
-  BLANK_TRIP_EVENT };
+  BLANK_TRIP_EVENT,
+  FILTERS,
+  EmptyMessage,
+  FilterType
+};
