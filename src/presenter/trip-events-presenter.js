@@ -15,8 +15,6 @@ export default class TripEventsPresenter {
   #offerModel = null;
 
   #tripEvents = [];
-  #offersList = [];
-  #destinationsList = [];
 
   constructor({tripEventsContainer, tripEventModel, destinationModel, offerModel}) {
     this.#tripEventsContainer = tripEventsContainer;
@@ -37,21 +35,18 @@ export default class TripEventsPresenter {
     render(this.#tripEventListComponent, this.#tripEventsContainer);
 
     for (let i = 0; i < this.#tripEvents.length; i++) {
-      const destination = this.#destinationModel.getById(this.#tripEvents[i].destination);
-      this.#renderTripEvent(this.#tripEvents[i], destination);
+      this.#renderTripEvent(this.#tripEvents[i], this.#destinationModel, this.#offerModel);
     }
   }
 
-  #renderTripEvent(tripEvent, destination) {
+  #renderTripEvent(tripEvent, destinationModel, offerModel) {
     const tripEventPresenter = new TripEventPresenter(this.#tripEventListComponent);
 
-    tripEventPresenter.init(tripEvent, destination, this.#offersList, this.#destinationsList, this.#offerModel);
+    tripEventPresenter.init({tripEvent, destinationModel, offerModel});
   }
 
   init() {
     this.#tripEvents = [...this.#tripEventModel.tripEvents];
-    this.#offersList = [...this.#offerModel.offers];
-    this.#destinationsList = [...this.#destinationModel.destinations];
 
     if(!this.#tripEvents.length) {
       this.#renderListEmpty();

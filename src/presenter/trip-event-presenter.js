@@ -9,7 +9,6 @@ export default class TripEventPresenter {
   #editFormComponent = null;
   #tripEventListComponent = null;
   #offersList = null;
-  #offerModel = null;
   #offersFiltered = null;
   #destinationsList = null;
 
@@ -33,14 +32,13 @@ export default class TripEventPresenter {
     replace(this.#tripEventComponent, this.#editFormComponent);
   }
 
-  init(tripEvent, destination, offersList, destinationsList, offerModel) {
+  init({tripEvent, destinationModel, offerModel}) {
     this.#tripEvent = tripEvent;
-    this.#destination = destination;
+    this.#destination = destinationModel.getById(this.#tripEvent.destination);
 
-    this.#offersList = offersList;
-    this.#offerModel = offerModel;
-    this.#offersFiltered = this.#offerModel.getByType(tripEvent.type);
-    this.#destinationsList = destinationsList;
+    this.#offersList = [...offerModel.offers];
+    this.#offersFiltered = offerModel.getByType(tripEvent.type);
+    this.#destinationsList = [...destinationModel.destinations];
 
     this.#tripEventComponent = new TripEventView({
       tripEvent: this.#tripEvent,
