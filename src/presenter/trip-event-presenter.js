@@ -1,4 +1,4 @@
-import { render, replace } from '../framework/render.js';
+import { remove, render, replace } from '../framework/render.js';
 import TripEventView from '../view/trip-event-view.js';
 import EditFormView from '../view/edit-form-view.js';
 
@@ -32,7 +32,14 @@ export default class TripEventPresenter {
     replace(this.#tripEventComponent, this.#editFormComponent);
   }
 
+  destroy() {
+    remove(this.#tripEventComponent);
+    remove(this.#editFormComponent);
+  }
+
   init({tripEvent, destinationModel, offerModel}) {
+    const prevTripEventComponent = this.#tripEventComponent;
+    const prevEditFormComponent = this.#editFormComponent;
     this.#tripEvent = tripEvent;
     this.#destination = destinationModel.getById(this.#tripEvent.destination);
 
@@ -64,6 +71,18 @@ export default class TripEventPresenter {
         document.removeEventListener('keydown', this.#escKeyDownHandler);
       },
     });
-    render(this.#tripEventComponent, this.#tripEventListComponent.element);
+
+    if(prevTripEventComponent === null || prevEditFormComponent === null) {
+      render(this.#tripEventComponent, this.#tripEventListComponent);
+    }
+    if(this.#tripEventListComponent.contains(prevTripEventComponent)) {
+      replace(this.#tripEventComponent, prevTripEventComponent);
+    }
+    if(this.#tripEventListComponent.contains(prevEditFormComponent)) {
+      replace(this.#editFormComponent, prevEditFormComponent);
+    }
+
+    remove(prevTripEventComponent);
+    remove(prevEditFormComponent);
   }
 }
