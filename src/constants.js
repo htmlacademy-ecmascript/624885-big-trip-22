@@ -8,6 +8,7 @@ const TIME_FORMAT = 'HH:mm';
 
 const CITIES = [
   'Amsterdam', 'Geneva', 'Paris', 'Moscow', 'New York', 'London', 'Berlin', 'Madrid', 'Oslo', 'Helsinki' ];
+
 const EVENT_DESCRIPTIONS = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   'Cras aliquet varius magna, non porta ligula feugiat eget.',
@@ -36,6 +37,79 @@ const BLANK_TRIP_EVENT = {
   offers: []
 };
 
+const FilterType = {
+  EVERYTHING: 'everything',
+  PAST: 'past',
+  PRESENT: 'present',
+  FUTURE: 'future'
+};
+
+const FILTERS = [
+  {
+    type: FilterType.EVERYTHING,
+    isChoosen: true,
+    isDisabled: false
+  },
+  {
+    type: FilterType.FUTURE,
+    isChoosen: false,
+    isDisabled: true
+  },
+  {
+    type: FilterType.PRESENT,
+    isChoosen: false,
+    isDisabled: false
+  },
+  {
+    type: FilterType.PAST,
+    isChoosen: false,
+    isDisabled: false
+  },
+];
+
+const EmptyMessage = {
+  [FilterType.EVERYTHING]: 'Click New Event to create your first point',
+  [FilterType.PAST]: 'There are no past events now',
+  [FilterType.PRESENT]: 'There are no present events now',
+  [FilterType.FUTURE]: 'There are no future events now',
+};
+
+const SortType = {
+  DAY: 'day',
+  EVENT: 'event',
+  TIME: 'time',
+  PRICE: 'price',
+  OFFERS: 'offers'
+};
+
+const SORTS = [
+  {
+    type: SortType.DAY,
+    isChoosen: true,
+    isDisabled: false
+  },
+  {
+    type: SortType.EVENT,
+    isChoosen: false,
+    isDisabled: true
+  },
+  {
+    type: SortType.TIME,
+    isChoosen: false,
+    isDisabled: false
+  },
+  {
+    type: SortType.PRICE,
+    isChoosen: false,
+    isDisabled: false
+  },
+  {
+    type: SortType.OFFERS,
+    isChoosen: false,
+    isDisabled: true
+  },
+];
+
 export {
   MINUTS_IN_HOUR,
   HOURS_IN_DAY,
@@ -45,4 +119,9 @@ export {
   CITIES,
   EVENT_DESCRIPTIONS,
   EVENT_TYPES,
-  BLANK_TRIP_EVENT };
+  BLANK_TRIP_EVENT,
+  FILTERS,
+  EmptyMessage,
+  FilterType,
+  SORTS
+};

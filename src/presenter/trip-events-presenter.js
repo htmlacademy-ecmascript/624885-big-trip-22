@@ -3,6 +3,7 @@ import TripEventListView from '../view/trip-event-list-view.js';
 import SortView from '../view/sort-view.js';
 import TripEventView from '../view/trip-event-view.js';
 import EditFormView from '../view/edit-form-view.js';
+import ListEmptyView from '../view/list-empty-view.js';
 
 export default class TripEventsPresenter {
   #tripEventListComponent = new TripEventListView();
@@ -28,6 +29,11 @@ export default class TripEventsPresenter {
     this.#offersList = [...this.#offerModel.offers];
     this.#destinationsList = [...this.#destinationModel.destinations];
 
+    if(!this.#tripEvents.length) {
+      render(new ListEmptyView, this.#tripEventsContainer);
+      return;
+    }
+
     render(new SortView(), this.#tripEventsContainer);
     render(this.#tripEventListComponent, this.#tripEventsContainer);
 
@@ -41,7 +47,7 @@ export default class TripEventsPresenter {
     const escKeyDownHandler = (evt) => {
       if (evt.key === 'Escape') {
         evt.preventDefault();
-        replaceFormToCard();
+        replaceFormToEvent();
         document.removeEventListener('keydown', escKeyDownHandler);
       }
     };
@@ -66,11 +72,11 @@ export default class TripEventsPresenter {
       destinationsList,
       destination,
       onFormSubmit: () => {
-        replaceFormToCard();
+        replaceFormToEvent();
         document.removeEventListener('keydown', escKeyDownHandler);
       },
       onCloseClick: () => {
-        replaceFormToCard();
+        replaceFormToEvent();
         document.removeEventListener('keydown', escKeyDownHandler);
       },
     });
@@ -79,7 +85,7 @@ export default class TripEventsPresenter {
       replace(editFormComponent, tripEventComponent);
     }
 
-    function replaceFormToCard() {
+    function replaceFormToEvent() {
       replace(tripEventComponent, editFormComponent);
     }
 
