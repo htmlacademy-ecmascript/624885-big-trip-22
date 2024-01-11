@@ -4,11 +4,12 @@ import SortView from '../view/sort-view.js';
 import ListEmptyView from '../view/list-empty-view.js';
 import TripEventPresenter from './trip-event-presenter.js';
 import { updateItem } from '../utils.js';
+import dayjs from 'dayjs';
 
 export default class TripEventsPresenter {
   #tripEventListComponent = new TripEventListView();
   #listEmptyComponent = new ListEmptyView();
-  #sortComponent = new SortView();
+  #sortComponent = null;
 
   #tripEventsContainer = null;
   #tripEventModel = null;
@@ -26,6 +27,7 @@ export default class TripEventsPresenter {
   }
 
   #renderSort() {
+    this.#sortComponent = new SortView({onSortChange: this.#handleSortChange});
     render(this.#sortComponent, this.#tripEventsContainer);
   }
 
@@ -66,6 +68,26 @@ export default class TripEventsPresenter {
 
   #handleModeChange = () => {
     this.#tripEventPresenters.forEach((presenter) => presenter.resetView());
+  };
+
+  #handleSortChange = (el) => {
+    const sortType = el.value;
+    switch(sortType) {
+      case 'day':
+        this.#tripEvents
+          .sort((firstElement, secondElement) => dayjs(secondElement.startTime).diff(dayjs(firstElement.startTime)));
+        break;
+      case 'time':
+        this.#tripEvents.sort((firstElement, secondElement) =>
+          dayjs(secondElement.startTime).diff(secondElement.endTime) - dayjs(firstElement.startTime).diff(firstElement.endTime)
+        );
+        break;
+      case 'price':
+        this.#tripEvents.sort((firstElement, secondElement) => secondElement.price - firstElement.price);
+        break;
+    }
+    this.#clearTripEventsList();
+    this.#renderTripEvents();
   };
 
   init() {
