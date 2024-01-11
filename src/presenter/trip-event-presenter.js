@@ -1,6 +1,7 @@
 import { remove, render, replace } from '../framework/render.js';
 import TripEventView from '../view/trip-event-view.js';
 import EditFormView from '../view/edit-form-view.js';
+import { Mode } from '../constants.js';
 
 export default class TripEventPresenter {
   #tripEvent = null;
@@ -9,13 +10,17 @@ export default class TripEventPresenter {
   #editFormComponent = null;
   #tripEventListContainer = null;
   #onDataChange = null;
+  #onModeChange = null;
   #offersList = null;
   #offersFiltered = null;
   #destinationsList = null;
 
-  constructor({tripEventListContainer, onDataChange}) {
+  #mode = Mode.DEFAULT;
+
+  constructor({tripEventListContainer, onDataChange, onModeChange}) {
     this.#tripEventListContainer = tripEventListContainer;
     this.#onDataChange = onDataChange;
+    this.#onModeChange = onModeChange;
   }
 
   #escKeyDownHandler = (evt) => {
@@ -28,10 +33,13 @@ export default class TripEventPresenter {
 
   #replaceCardToForm() {
     replace(this.#editFormComponent, this.#tripEventComponent);
+    this.#onModeChange();
+    this.#mode = Mode.EDITING;
   }
 
   #replaceFormToEvent() {
     replace(this.#tripEventComponent, this.#editFormComponent);
+    this.#mode = Mode.DEFAULT;
   }
 
   destroy() {
@@ -82,14 +90,20 @@ export default class TripEventPresenter {
       render(this.#tripEventComponent, this.#tripEventListContainer);
       return;
     }
-    if(this.#tripEventListContainer.contains(prevTripEventComponent.element)) {
+    if(this.#mode === Mode.DEFAULT) {
       replace(this.#tripEventComponent, prevTripEventComponent);
     }
-    if(this.#tripEventListContainer.contains(prevEditFormComponent.element)) {
+    if(this.#mode === Mode.EDITING) {
       replace(this.#editFormComponent, prevEditFormComponent);
     }
 
     remove(prevTripEventComponent);
     remove(prevEditFormComponent);
+  }
+
+  resetView() {
+    if(this.#mode !== Mode.DEFAULT) {
+      this.#replaceFormToEvent();
+    }
   }
 }

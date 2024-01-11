@@ -110,6 +110,11 @@ const SORTS = [
   },
 ];
 
+const Mode = {
+  DEFAULT: 'default',
+  EDITING: 'editing'
+};
+
 export {
   MINUTS_IN_HOUR,
   HOURS_IN_DAY,
@@ -123,5 +128,6 @@ export {
   FILTERS,
   EmptyMessage,
   FilterType,
-  SORTS
+  SORTS,
+  Mode
 };
