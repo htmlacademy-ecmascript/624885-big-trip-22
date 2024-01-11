@@ -42,7 +42,10 @@ export default class TripEventsPresenter {
   }
 
   #renderTripEvent(tripEvent, destinationModel, offerModel) {
-    const tripEventPresenter = new TripEventPresenter(this.#tripEventListComponent.element);
+    const tripEventPresenter = new TripEventPresenter({
+      tripEventListContainer: this.#tripEventListComponent.element,
+      onDataChange: this.#handleTaskChange
+    });
 
     tripEventPresenter.init({tripEvent, destinationModel, offerModel});
     this.#tripEventPresenters.set(tripEvent.id, tripEventPresenter);
@@ -53,9 +56,11 @@ export default class TripEventsPresenter {
     this.#tripEventPresenters.clear();
   }
 
-  #handleTaskChange = (updatedTask) => {
+  #handleTaskChange = (updatedTask, destinationModel, offerModel) => {
     this.#tripEvents = updateItem(this.#tripEvents, updatedTask);
-    this.#tripEventPresenters.get(updatedTask.id).init(updatedTask);
+    this.#tripEventPresenters
+      .get(updatedTask.id)
+      .init({tripEvent: updatedTask, destinationModel, offerModel});
   };
 
   init() {

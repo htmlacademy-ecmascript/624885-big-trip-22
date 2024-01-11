@@ -7,13 +7,15 @@ export default class TripEventPresenter {
   #destination = null;
   #tripEventComponent = null;
   #editFormComponent = null;
-  #tripEventListComponent = null;
+  #tripEventListContainer = null;
+  #onDataChange = null;
   #offersList = null;
   #offersFiltered = null;
   #destinationsList = null;
 
-  constructor(tripEventListComponent) {
-    this.#tripEventListComponent = tripEventListComponent;
+  constructor({tripEventListContainer, onDataChange}) {
+    this.#tripEventListContainer = tripEventListContainer;
+    this.#onDataChange = onDataChange;
   }
 
   #escKeyDownHandler = (evt) => {
@@ -54,6 +56,10 @@ export default class TripEventPresenter {
       onEditClick: () => {
         this.#replaceCardToForm();
         document.addEventListener('keydown', this.#escKeyDownHandler);
+      },
+      onFavoriteClick: () => {
+        this.#tripEvent.favorite = !this.#tripEvent.favorite;
+        this.#onDataChange(this.#tripEvent, destinationModel, offerModel);
       }
     });
 
@@ -73,12 +79,13 @@ export default class TripEventPresenter {
     });
 
     if(prevTripEventComponent === null || prevEditFormComponent === null) {
-      render(this.#tripEventComponent, this.#tripEventListComponent);
+      render(this.#tripEventComponent, this.#tripEventListContainer);
+      return;
     }
-    if(this.#tripEventListComponent.contains(prevTripEventComponent)) {
+    if(this.#tripEventListContainer.contains(prevTripEventComponent.element)) {
       replace(this.#tripEventComponent, prevTripEventComponent);
     }
-    if(this.#tripEventListComponent.contains(prevEditFormComponent)) {
+    if(this.#tripEventListContainer.contains(prevEditFormComponent.element)) {
       replace(this.#editFormComponent, prevEditFormComponent);
     }
 
