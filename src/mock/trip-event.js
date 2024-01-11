@@ -1,8 +1,10 @@
 import { CITIES, EVENT_TYPES } from '../constants.js';
 import { getRandomNumber } from '../utils.js';
+import { nanoid } from 'nanoid';
 
 const mockTripEvents = [
   {
+    id: nanoid(),
     type: EVENT_TYPES[5],
     destination: getRandomNumber(0, CITIES.length).toString(),
     startTime: new Date('2023-12-01T12:00'),
@@ -14,6 +16,7 @@ const mockTripEvents = [
     ]
   },
   {
+    id: nanoid(),
     type: EVENT_TYPES[0],
     destination: getRandomNumber(0, CITIES.length).toString(),
     startTime: new Date('2023-12-02T09:15'),
@@ -23,6 +26,7 @@ const mockTripEvents = [
     offers: [1]
   },
   {
+    id: nanoid(),
     type: EVENT_TYPES[1],
     destination: getRandomNumber(0, CITIES.length).toString(),
     startTime: new Date('2023-12-02T17:00'),
@@ -32,6 +36,7 @@ const mockTripEvents = [
     offers: []
   },
   {
+    id: nanoid(),
     type: EVENT_TYPES[7],
     destination: getRandomNumber(0, CITIES.length).toString(),
     startTime: new Date('2023-12-03T11:00'),

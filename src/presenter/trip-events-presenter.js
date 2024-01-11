@@ -1,12 +1,14 @@
-import { render, replace } from '../framework/render.js';
+import { render } from '../framework/render.js';
 import TripEventListView from '../view/trip-event-list-view.js';
 import SortView from '../view/sort-view.js';
-import TripEventView from '../view/trip-event-view.js';
-import EditFormView from '../view/edit-form-view.js';
 import ListEmptyView from '../view/list-empty-view.js';
+import TripEventPresenter from './trip-event-presenter.js';
+import { updateItem } from '../utils.js';
 
 export default class TripEventsPresenter {
   #tripEventListComponent = new TripEventListView();
+  #listEmptyComponent = new ListEmptyView();
+  #sortComponent = new SortView();
 
   #tripEventsContainer = null;
   #tripEventModel = null;
@@ -14,8 +16,7 @@ export default class TripEventsPresenter {
   #offerModel = null;
 
   #tripEvents = [];
-  #offersList = [];
-  #destinationsList = [];
+  #tripEventPresenters = new Map();
 
   constructor({tripEventsContainer, tripEventModel, destinationModel, offerModel}) {
     this.#tripEventsContainer = tripEventsContainer;
@@ -24,71 +25,59 @@ export default class TripEventsPresenter {
     this.#offerModel = offerModel;
   }
 
-  init() {
-    this.#tripEvents = [...this.#tripEventModel.tripEvents];
-    this.#offersList = [...this.#offerModel.offers];
-    this.#destinationsList = [...this.#destinationModel.destinations];
+  #renderSort() {
+    render(this.#sortComponent, this.#tripEventsContainer);
+  }
 
-    if(!this.#tripEvents.length) {
-      render(new ListEmptyView, this.#tripEventsContainer);
-      return;
-    }
+  #renderListEmpty() {
+    render(this.#listEmptyComponent, this.#tripEventsContainer);
+  }
 
-    render(new SortView(), this.#tripEventsContainer);
+  #renderTripEvents() {
     render(this.#tripEventListComponent, this.#tripEventsContainer);
 
     for (let i = 0; i < this.#tripEvents.length; i++) {
-      const destination = this.#destinationModel.getById(this.#tripEvents[i].destination);
-      this.#renderTripEvent(this.#tripEvents[i], destination);
+      this.#renderTripEvent(this.#tripEvents[i], this.#destinationModel, this.#offerModel);
     }
   }
 
-  #renderTripEvent(tripEvent, destination) {
-    const escKeyDownHandler = (evt) => {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        replaceFormToEvent();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    };
-
-    const offersList = this.#offersList;
-    const offersFiltered = this.#offerModel.getByType(tripEvent.type);
-    const destinationsList = this.#destinationsList;
-
-    const tripEventComponent = new TripEventView({
-      tripEvent,
-      offersList,
-      destination,
-      onEditClick: () => {
-        replaceCardToForm();
-        document.addEventListener('keydown', escKeyDownHandler);
-      }
+  #renderTripEvent(tripEvent, destinationModel, offerModel) {
+    const tripEventPresenter = new TripEventPresenter({
+      tripEventListContainer: this.#tripEventListComponent.element,
+      onDataChange: this.#handleTaskChange,
+      onModeChange: this.#handleModeChange
     });
 
-    const editFormComponent = new EditFormView({
-      tripEvent,
-      offersFiltered,
-      destinationsList,
-      destination,
-      onFormSubmit: () => {
-        replaceFormToEvent();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      },
-      onCloseClick: () => {
-        replaceFormToEvent();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      },
-    });
+    tripEventPresenter.init({tripEvent, destinationModel, offerModel});
+    this.#tripEventPresenters.set(tripEvent.id, tripEventPresenter);
+  }
 
-    function replaceCardToForm() {
-      replace(editFormComponent, tripEventComponent);
+  #clearTripEventsList() {
+    this.#tripEventPresenters.forEach((presenter) => presenter.destroy());
+    this.#tripEventPresenters.clear();
+  }
+
+  #handleTaskChange = (updatedTask, destinationModel, offerModel) => {
+    this.#tripEvents = updateItem(this.#tripEvents, updatedTask);
+    this.#tripEventPresenters
+      .get(updatedTask.id)
+      .init({tripEvent: updatedTask, destinationModel, offerModel});
+  };
+
+  #handleModeChange = () => {
+    this.#tripEventPresenters.forEach((presenter) => presenter.resetView());
+  };
+
+  init() {
+    this.#tripEvents = [...this.#tripEventModel.tripEvents];
+
+    if(!this.#tripEvents.length) {
+      this.#renderListEmpty();
+      return;
     }
 
-    function replaceFormToEvent() {
-      replace(tripEventComponent, editFormComponent);
-    }
-
-    render(tripEventComponent, this.#tripEventListComponent.element);
+    this.#renderSort();
+    this.#renderTripEvents();
   }
 }
+

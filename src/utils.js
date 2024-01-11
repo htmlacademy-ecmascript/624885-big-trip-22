@@ -44,6 +44,10 @@ function incrementCounter(startFrom) {
   };
 }
 
+function updateItem(items, update) {
+  return items.map((item) => item.id === update.id ? update : item);
+}
+
 export {
   getRandomArrayElement,
   getRandomNumber,
@@ -51,5 +55,6 @@ export {
   createDateTimeString,
   createTimeString,
   getDuration,
-  incrementCounter
+  incrementCounter,
+  updateItem
 };
