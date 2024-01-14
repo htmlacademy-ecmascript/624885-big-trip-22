@@ -82,7 +82,7 @@ const SortType = {
   OFFERS: 'offers'
 };
 
-const SORTS = [
+const sorts = [
   {
     type: SortType.DAY,
     isChoosen: true,
@@ -128,6 +128,6 @@ export {
   FILTERS,
   EmptyMessage,
   FilterType,
-  SORTS,
+  sorts,
   Mode
 };

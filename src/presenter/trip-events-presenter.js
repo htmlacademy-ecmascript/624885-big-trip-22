@@ -1,14 +1,13 @@
 import { render } from '../framework/render.js';
 import TripEventListView from '../view/trip-event-list-view.js';
-import SortView from '../view/sort-view.js';
 import ListEmptyView from '../view/list-empty-view.js';
 import TripEventPresenter from './trip-event-presenter.js';
 import { sortDayAscending, sortPriceAscending, sortTimeAscending, updateItem } from '../utils.js';
+import SortPresenter from './sort-presenter.js';
 
 export default class TripEventsPresenter {
   #tripEventListComponent = new TripEventListView();
   #listEmptyComponent = new ListEmptyView();
-  #sortComponent = null;
 
   #tripEventsContainer = null;
   #tripEventModel = null;
@@ -26,8 +25,11 @@ export default class TripEventsPresenter {
   }
 
   #renderSort() {
-    this.#sortComponent = new SortView({onSortChange: this.#handleSortChange});
-    render(this.#sortComponent, this.#tripEventsContainer);
+    const sortPresenter = new SortPresenter({
+      tripEventsContainer: this.#tripEventsContainer,
+      onSortChange: this.#handleSortChange
+    });
+    sortPresenter.init();
   }
 
   #renderListEmpty() {

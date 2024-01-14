@@ -1,4 +1,3 @@
-import { SORTS } from '../constants.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
 function createListSortTemplate(sorts) {
@@ -21,8 +20,7 @@ function createListSortTemplate(sorts) {
   );
 }
 
-function createSortTemplate() {
-  const sorts = SORTS;
+function createSortTemplate(sorts) {
   return `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
     ${createListSortTemplate(sorts)}
   </form>`;
@@ -30,18 +28,18 @@ function createSortTemplate() {
 
 export default class SortView extends AbstractView {
   #handleSortChange = null;
+  #sorts = [];
 
-  constructor({onSortChange}) {
+  constructor({onSortChange, sorts}) {
     super();
     this.#handleSortChange = onSortChange;
+    this.#sorts = sorts;
 
-    this.element
-      .querySelectorAll('.trip-sort__input')
-      .forEach((item) => item.addEventListener('change', this.#sortChangeHandler));
+    this.element.addEventListener('change', this.#sortChangeHandler);
   }
 
   get template() {
-    return createSortTemplate();
+    return createSortTemplate(this.#sorts);
   }
 
   #sortChangeHandler = (evt) => {
