@@ -86,7 +86,7 @@ export default class TripEventPresenter {
       },
     });
 
-    if(prevTripEventComponent === null || prevEditFormComponent === null) {
+    if(!prevTripEventComponent || !prevEditFormComponent) {
       render(this.#tripEventComponent, this.#tripEventListContainer);
       return;
     }
