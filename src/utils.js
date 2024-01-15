@@ -48,6 +48,11 @@ function updateItem(items, update) {
   return items.map((item) => item.id === update.id ? update : item);
 }
 
+const sortDayAscending = (firstElement, secondElement) => dayjs(firstElement.startTime).diff(secondElement.startTime);
+const sortTimeAscending = (firstElement, secondElement) => dayjs(firstElement.endTime).diff(firstElement.startTime) - dayjs(secondElement.endTime).diff(secondElement.startTime);
+const sortPriceAscending = (firstElement, secondElement) => firstElement.price - secondElement.price;
+
+
 export {
   getRandomArrayElement,
   getRandomNumber,
@@ -56,5 +61,8 @@ export {
   createTimeString,
   getDuration,
   incrementCounter,
-  updateItem
+  updateItem,
+  sortDayAscending,
+  sortTimeAscending,
+  sortPriceAscending
 };
