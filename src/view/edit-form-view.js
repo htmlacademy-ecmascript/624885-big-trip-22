@@ -1,4 +1,4 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { createDateTimeString } from '../utils.js';
 import { BLANK_TRIP_EVENT } from '../constants.js';
 
@@ -155,7 +155,7 @@ function createEditFormTemplate(tripEvent, currentOffersList, destinationsList, 
   </li>`;
 }
 
-export default class EditFormView extends AbstractView {
+export default class EditFormView extends AbstractStatefulView {
   #tripEvent = null;
   #offersFiltered = null;
   #destinationsList = null;
@@ -165,7 +165,7 @@ export default class EditFormView extends AbstractView {
 
   constructor ({tripEvent = BLANK_TRIP_EVENT, offersFiltered = [], destinationsList, destination = {}, onFormSubmit, onCloseClick}) {
     super();
-    this.#tripEvent = tripEvent;
+    this._setState(tripEvent);
     this.#offersFiltered = offersFiltered;
     this.#destinationsList = destinationsList;
     this.#currentDestination = destination;
@@ -177,7 +177,7 @@ export default class EditFormView extends AbstractView {
   }
 
   get template() {
-    return createEditFormTemplate(this.#tripEvent, this.#offersFiltered, this.#destinationsList, this.#currentDestination);
+    return createEditFormTemplate(this._state, this.#offersFiltered, this.#destinationsList, this.#currentDestination);
   }
 
   #formSubmitHandler = (evt) => {
