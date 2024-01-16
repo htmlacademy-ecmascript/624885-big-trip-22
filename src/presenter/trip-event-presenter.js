@@ -76,7 +76,8 @@ export default class TripEventPresenter {
       offersFiltered: this.#offersFiltered,
       destinationsList: this.#destinationsList,
       destination: this.#destination,
-      onFormSubmit: () => {
+      onFormSubmit: (updatedTripEvent) => {
+        this.#onDataChange(updatedTripEvent, destinationModel, offerModel);
         this.#replaceFormToEvent();
         document.removeEventListener('keydown', this.#escKeyDownHandler);
       },

@@ -65,6 +65,9 @@ function createEventTypeTemplate(tripEvent) {
 }
 
 function createOffersTemplate(offers, offersList) {
+  if(offersList.length === 0) {
+    return '';
+  }
   return offersList.offers.map(({id, title, price, type}) =>
     `<div class="event__available-offers">
       <div class="event__offer-selector">
@@ -156,7 +159,6 @@ function createEditFormTemplate(tripEvent, currentOffersList, destinationsList, 
 }
 
 export default class EditFormView extends AbstractStatefulView {
-  #tripEvent = null;
   #offersFiltered = null;
   #destinationsList = null;
   #currentDestination = null;
@@ -172,21 +174,47 @@ export default class EditFormView extends AbstractStatefulView {
     this.#handleFormSubmit = onFormSubmit;
     this.#handleCloseClick = onCloseClick;
 
-    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeClickHandler);
+    this._restoreHandlers();
   }
 
   get template() {
     return createEditFormTemplate(this._state, this.#offersFiltered, this.#destinationsList, this.#currentDestination);
   }
 
+  _restoreHandlers() {
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeClickHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationInputHandler);
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
+    this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
+  }
+
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit();
+    this.#handleFormSubmit(this._state);
   };
 
   #closeClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleCloseClick();
+  };
+
+  #destinationInputHandler = (evt) => {
+    evt.preventDefault();
+    // Не понятно как сохранять направление
+  };
+
+  #typeChangeHandler = (evt) => {
+    evt.preventDefault();
+    this.#offersFiltered = [];
+    this.updateElement({
+      type: evt.target.value,
+      offers: []
+    });
+  };
+
+  #priceInputHandler = (evt) => {
+    evt.preventDefault();
+    this._setState({price: evt.target.value});
   };
 }
