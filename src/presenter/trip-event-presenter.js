@@ -73,7 +73,7 @@ export default class TripEventPresenter {
 
     this.#editFormComponent = new EditFormView({
       tripEvent: this.#tripEvent,
-      offersFiltered: this.#offersFiltered,
+      offersList: this.#offersList,
       destinationsList: this.#destinationsList,
       destination: this.#destination,
       onFormSubmit: (updatedTripEvent) => {

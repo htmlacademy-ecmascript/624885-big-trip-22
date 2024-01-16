@@ -64,27 +64,29 @@ function createEventTypeTemplate(tripEvent) {
   </div>`;
 }
 
-function createOffersTemplate(offers, offersList) {
+function createOffersTemplate(offers, offersList, type) {
   if(offersList.length === 0) {
     return '';
   }
-  return offersList.offers.map(({id, title, price, type}) =>
-    `<div class="event__available-offers">
-      <div class="event__offer-selector">
-        <input
-          class="event__offer-checkbox visually-hidden"
-          id="event-offer-${type}-${id}"
-          type="checkbox"
-          name="event-offer-${type}-${id}"
-          ${ offers.includes(id) ? 'checked' : ''}
-        >
-        <label class="event__offer-label" for="event-offer-${type}-${id}">
-          <span class="event__offer-title">${title}</span>
-          &plus;&euro;&nbsp;
-          <span class="event__offer-price">${price}</span>
-        </label>
-      </div>`
-  ).join('');
+  return offersList
+    .find((item) => item.type === type)
+    .offers
+    .map(({id, title, price}) =>
+      `<div class="event__offer-selector">
+          <input
+            class="event__offer-checkbox visually-hidden"
+            id="event-offer-${type}-${id}"
+            type="checkbox"
+            name="event-offer-${type}-${id}"
+            ${ offers.includes(id) ? 'checked' : ''}
+          >
+          <label class="event__offer-label" for="event-offer-${type}-${id}">
+            <span class="event__offer-title">${title}</span>
+            &plus;&euro;&nbsp;
+            <span class="event__offer-price">${price}</span>
+          </label>
+        </div>`
+    ).join('');
 }
 
 function createDestinationPicturesTemplate(pictures) {
@@ -95,13 +97,13 @@ function createDestinationOptionsTemplate(destinationsList) {
   return destinationsList.map((destination) => `<option value="${destination.name}"></option>`).join('');
 }
 
-function createEditFormTemplate(tripEvent, currentOffersList, destinationsList, currentDestination) {
+function createEditFormTemplate(tripEvent, offersList, destinationsList, currentDestination) {
   const { type, startTime, endTime, price, offers} = tripEvent;
   const eventTypeTemplate = createEventTypeTemplate(tripEvent);
   const startDate = createDateTimeString(startTime);
   const endDate = createDateTimeString(endTime);
   const destinationOptionsTemplate = createDestinationOptionsTemplate(destinationsList);
-  const offersTemplate = createOffersTemplate(offers, currentOffersList);
+  const offersTemplate = createOffersTemplate(offers, offersList, type);
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -142,7 +144,9 @@ function createEditFormTemplate(tripEvent, currentOffersList, destinationsList, 
       <section class="event__details">
         <section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-          ${offersTemplate}
+          <div class="event__available-offers">
+            ${offersTemplate}
+          </div>
         </section>
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
@@ -159,16 +163,16 @@ function createEditFormTemplate(tripEvent, currentOffersList, destinationsList, 
 }
 
 export default class EditFormView extends AbstractStatefulView {
-  #offersFiltered = null;
+  #offersList = null;
   #destinationsList = null;
   #currentDestination = null;
   #handleFormSubmit = null;
   #handleCloseClick = null;
 
-  constructor ({tripEvent = BLANK_TRIP_EVENT, offersFiltered = [], destinationsList, destination = {}, onFormSubmit, onCloseClick}) {
+  constructor ({tripEvent = BLANK_TRIP_EVENT, offersList, destinationsList, destination = {}, onFormSubmit, onCloseClick}) {
     super();
     this._setState(tripEvent);
-    this.#offersFiltered = offersFiltered;
+    this.#offersList = offersList;
     this.#destinationsList = destinationsList;
     this.#currentDestination = destination;
     this.#handleFormSubmit = onFormSubmit;
@@ -178,15 +182,16 @@ export default class EditFormView extends AbstractStatefulView {
   }
 
   get template() {
-    return createEditFormTemplate(this._state, this.#offersFiltered, this.#destinationsList, this.#currentDestination);
+    return createEditFormTemplate(this._state, this.#offersList, this.#destinationsList, this.#currentDestination);
   }
 
   _restoreHandlers() {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeClickHandler);
-    this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationInputHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationInputHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
+    this.element.querySelector('.event__available-offers').addEventListener('change', this.#offerChangeHandler);
   }
 
   #formSubmitHandler = (evt) => {
@@ -201,12 +206,14 @@ export default class EditFormView extends AbstractStatefulView {
 
   #destinationInputHandler = (evt) => {
     evt.preventDefault();
-    // Не понятно как сохранять направление
+    const updatedDestination = this.#destinationsList.find((value) => value.name === evt.target.value);
+    this._setState({
+      destination: updatedDestination.id.toString()
+    });
   };
 
   #typeChangeHandler = (evt) => {
     evt.preventDefault();
-    this.#offersFiltered = [];
     this.updateElement({
       type: evt.target.value,
       offers: []
@@ -216,5 +223,17 @@ export default class EditFormView extends AbstractStatefulView {
   #priceInputHandler = (evt) => {
     evt.preventDefault();
     this._setState({price: evt.target.value});
+  };
+
+  #offerChangeHandler = () => {
+    const updatedOffers = [];
+    this.element.querySelectorAll('.event__offer-checkbox').forEach((value) => {
+      if(value.checked) {
+        updatedOffers.push(parseInt(value.id.split('-')[3],10));
+      }
+    });
+    this.updateElement({
+      offers: updatedOffers
+    });
   };
 }
