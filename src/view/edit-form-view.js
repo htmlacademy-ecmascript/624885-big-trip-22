@@ -1,6 +1,8 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { createDateTimeString } from '../utils.js';
 import { BLANK_TRIP_EVENT } from '../constants.js';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
 function createEventTypeTemplate(tripEvent) {
   const { type } = tripEvent;
@@ -168,6 +170,8 @@ export default class EditFormView extends AbstractStatefulView {
   #currentDestination = null;
   #handleFormSubmit = null;
   #handleCloseClick = null;
+  #datepickerFrom = null;
+  #datepickerTo = null;
 
   constructor ({tripEvent = BLANK_TRIP_EVENT, offersList, destinationsList, destination = {}, onFormSubmit, onCloseClick}) {
     super();
@@ -181,6 +185,19 @@ export default class EditFormView extends AbstractStatefulView {
     this._restoreHandlers();
   }
 
+  removeElement() {
+    super.removeElement();
+
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
+  }
+
   get template() {
     return createEditFormTemplate(this._state, this.#offersList, this.#destinationsList, this.#currentDestination);
   }
@@ -192,6 +209,35 @@ export default class EditFormView extends AbstractStatefulView {
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
     this.element.querySelector('.event__available-offers').addEventListener('change', this.#offerChangeHandler);
+
+    this.#setDatepickers();
+  }
+
+  #setDatepickers() {
+    this.#datepickerFrom = flatpickr(
+      this.element.querySelector('#event-start-time-1'),
+      {
+        dateFormat: 'd/m/y H:i',
+        enableTime: true,
+        // eslint-disable-next-line camelcase
+        time_24hr: true,
+        defaultDate: this._state.startTime,
+        maxDate: this._state.endTime,
+        onChange: this.#startTimeChangeHandler
+      }
+    );
+    this.#datepickerTo = flatpickr(
+      this.element.querySelector('#event-end-time-1'),
+      {
+        dateFormat: 'd/m/y H:i',
+        enableTime: true,
+        // eslint-disable-next-line camelcase
+        time_24hr: true,
+        defaultDate: this._state.endTime,
+        minDate: this._state.startTime,
+        onChange: this.#endTimeChangeHandler
+      }
+    );
   }
 
   #formSubmitHandler = (evt) => {
@@ -234,6 +280,18 @@ export default class EditFormView extends AbstractStatefulView {
     });
     this.updateElement({
       offers: updatedOffers
+    });
+  };
+
+  #startTimeChangeHandler = ([userDate]) => {
+    this.updateElement({
+      startTime: userDate
+    });
+  };
+
+  #endTimeChangeHandler = ([userDate]) => {
+    this.updateElement({
+      endTime: userDate
     });
   };
 }
