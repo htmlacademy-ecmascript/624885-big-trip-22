@@ -99,9 +99,9 @@ function createDestinationOptionsTemplate(destinationsList) {
   return destinationsList.map((destination) => `<option value="${destination.name}"></option>`).join('');
 }
 
-function createEditFormTemplate(tripEvent, offersList, destinationsList, currentDestination) {
-  const { type, startTime, endTime, price, offers} = tripEvent;
-  const eventTypeTemplate = createEventTypeTemplate(tripEvent);
+function createEditFormTemplate(state, offersList, destinationsList, currentDestination) {
+  const { type, startTime, endTime, price, offers} = state;
+  const eventTypeTemplate = createEventTypeTemplate(state);
   const startDate = createDateTimeString(startTime);
   const endDate = createDateTimeString(endTime);
   const destinationOptionsTemplate = createDestinationOptionsTemplate(destinationsList);
@@ -214,28 +214,28 @@ export default class EditFormView extends AbstractStatefulView {
   }
 
   #setDatepickers() {
+    const flatpickrConfig = {
+      dateFormat: 'd/m/y H:i',
+      enableTime: true,
+      // eslint-disable-next-line camelcase
+      time_24hr: true,
+    };
     this.#datepickerFrom = flatpickr(
       this.element.querySelector('#event-start-time-1'),
       {
-        dateFormat: 'd/m/y H:i',
-        enableTime: true,
-        // eslint-disable-next-line camelcase
-        time_24hr: true,
+        ...flatpickrConfig,
         defaultDate: this._state.startTime,
         maxDate: this._state.endTime,
-        onChange: this.#startTimeChangeHandler
+        onClose: this.#startTimeCloseHandler
       }
     );
     this.#datepickerTo = flatpickr(
       this.element.querySelector('#event-end-time-1'),
       {
-        dateFormat: 'd/m/y H:i',
-        enableTime: true,
-        // eslint-disable-next-line camelcase
-        time_24hr: true,
+        ...flatpickrConfig,
         defaultDate: this._state.endTime,
         minDate: this._state.startTime,
-        onChange: this.#endTimeChangeHandler
+        onClose: this.#endTimeCloseHandler
       }
     );
   }
@@ -283,15 +283,17 @@ export default class EditFormView extends AbstractStatefulView {
     });
   };
 
-  #startTimeChangeHandler = ([userDate]) => {
-    this.updateElement({
+  #startTimeCloseHandler = ([userDate]) => {
+    this._setState({
       startTime: userDate
     });
+    this.#datepickerTo.set('minDate', userDate);
   };
 
-  #endTimeChangeHandler = ([userDate]) => {
-    this.updateElement({
+  #endTimeCloseHandler = ([userDate]) => {
+    this._setState({
       endTime: userDate
     });
+    this.#datepickerFrom.set('maxDate', userDate);
   };
 }
