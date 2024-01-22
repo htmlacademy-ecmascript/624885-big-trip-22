@@ -73,10 +73,11 @@ export default class TripEventPresenter {
 
     this.#editFormComponent = new EditFormView({
       tripEvent: this.#tripEvent,
-      offersFiltered: this.#offersFiltered,
+      offersList: this.#offersList,
       destinationsList: this.#destinationsList,
       destination: this.#destination,
-      onFormSubmit: () => {
+      onFormSubmit: (updatedTripEvent) => {
+        this.#onDataChange(updatedTripEvent, destinationModel, offerModel);
         this.#replaceFormToEvent();
         document.removeEventListener('keydown', this.#escKeyDownHandler);
       },
@@ -86,7 +87,7 @@ export default class TripEventPresenter {
       },
     });
 
-    if(prevTripEventComponent === null || prevEditFormComponent === null) {
+    if(!prevTripEventComponent || !prevEditFormComponent) {
       render(this.#tripEventComponent, this.#tripEventListContainer);
       return;
     }
