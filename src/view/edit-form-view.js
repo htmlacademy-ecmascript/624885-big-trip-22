@@ -1,6 +1,8 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { createDateTimeString } from '../utils.js';
 import { BLANK_TRIP_EVENT } from '../constants.js';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
 function createEventTypeTemplate(tripEvent) {
   const { type } = tripEvent;
@@ -97,9 +99,9 @@ function createDestinationOptionsTemplate(destinationsList) {
   return destinationsList.map((destination) => `<option value="${destination.name}"></option>`).join('');
 }
 
-function createEditFormTemplate(tripEvent, offersList, destinationsList, currentDestination) {
-  const { type, startTime, endTime, price, offers} = tripEvent;
-  const eventTypeTemplate = createEventTypeTemplate(tripEvent);
+function createEditFormTemplate(state, offersList, destinationsList, currentDestination) {
+  const { type, startTime, endTime, price, offers} = state;
+  const eventTypeTemplate = createEventTypeTemplate(state);
   const startDate = createDateTimeString(startTime);
   const endDate = createDateTimeString(endTime);
   const destinationOptionsTemplate = createDestinationOptionsTemplate(destinationsList);
@@ -168,6 +170,8 @@ export default class EditFormView extends AbstractStatefulView {
   #currentDestination = null;
   #handleFormSubmit = null;
   #handleCloseClick = null;
+  #datepickerFrom = null;
+  #datepickerTo = null;
 
   constructor ({tripEvent = BLANK_TRIP_EVENT, offersList, destinationsList, destination = {}, onFormSubmit, onCloseClick}) {
     super();
@@ -181,6 +185,19 @@ export default class EditFormView extends AbstractStatefulView {
     this._restoreHandlers();
   }
 
+  removeElement() {
+    super.removeElement();
+
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
+  }
+
   get template() {
     return createEditFormTemplate(this._state, this.#offersList, this.#destinationsList, this.#currentDestination);
   }
@@ -192,6 +209,35 @@ export default class EditFormView extends AbstractStatefulView {
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
     this.element.querySelector('.event__available-offers').addEventListener('change', this.#offerChangeHandler);
+
+    this.#setDatepickers();
+  }
+
+  #setDatepickers() {
+    const flatpickrConfig = {
+      dateFormat: 'd/m/y H:i',
+      enableTime: true,
+      // eslint-disable-next-line camelcase
+      time_24hr: true,
+    };
+    this.#datepickerFrom = flatpickr(
+      this.element.querySelector('#event-start-time-1'),
+      {
+        ...flatpickrConfig,
+        defaultDate: this._state.startTime,
+        maxDate: this._state.endTime,
+        onClose: this.#startTimeCloseHandler
+      }
+    );
+    this.#datepickerTo = flatpickr(
+      this.element.querySelector('#event-end-time-1'),
+      {
+        ...flatpickrConfig,
+        defaultDate: this._state.endTime,
+        minDate: this._state.startTime,
+        onClose: this.#endTimeCloseHandler
+      }
+    );
   }
 
   #formSubmitHandler = (evt) => {
@@ -235,5 +281,19 @@ export default class EditFormView extends AbstractStatefulView {
     this.updateElement({
       offers: updatedOffers
     });
+  };
+
+  #startTimeCloseHandler = ([userDate]) => {
+    this._setState({
+      startTime: userDate
+    });
+    this.#datepickerTo.set('minDate', userDate);
+  };
+
+  #endTimeCloseHandler = ([userDate]) => {
+    this._setState({
+      endTime: userDate
+    });
+    this.#datepickerFrom.set('maxDate', userDate);
   };
 }
