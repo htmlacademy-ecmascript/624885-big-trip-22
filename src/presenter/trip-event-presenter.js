@@ -1,7 +1,8 @@
 import { remove, render, replace } from '../framework/render.js';
 import TripEventView from '../view/trip-event-view.js';
 import EditFormView from '../view/edit-form-view.js';
-import { Mode } from '../constants.js';
+import { Mode, UpdateType, UserAction } from '../constants.js';
+import { isMinorChange } from '../utils.js';
 
 export default class TripEventPresenter {
   #tripEvent = null;
@@ -12,13 +13,15 @@ export default class TripEventPresenter {
   #onDataChange = null;
   #onModeChange = null;
   #offersList = null;
-  #offersFiltered = null;
   #destinationsList = null;
+  #destinationModel = null;
 
   #mode = Mode.DEFAULT;
 
-  constructor({tripEventListContainer, onDataChange, onModeChange}) {
+  constructor({tripEventListContainer, offersList, destinationModel, onDataChange, onModeChange}) {
     this.#tripEventListContainer = tripEventListContainer;
+    this.#offersList = offersList;
+    this.#destinationModel = destinationModel;
     this.#onDataChange = onDataChange;
     this.#onModeChange = onModeChange;
   }
@@ -40,6 +43,7 @@ export default class TripEventPresenter {
   #replaceFormToEvent() {
     replace(this.#tripEventComponent, this.#editFormComponent);
     this.#mode = Mode.DEFAULT;
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
   destroy() {
@@ -47,15 +51,13 @@ export default class TripEventPresenter {
     remove(this.#editFormComponent);
   }
 
-  init({tripEvent, destinationModel, offerModel}) {
+  init(tripEvent) {
     const prevTripEventComponent = this.#tripEventComponent;
     const prevEditFormComponent = this.#editFormComponent;
     this.#tripEvent = tripEvent;
-    this.#destination = destinationModel.getById(this.#tripEvent.destination);
+    this.#destination = this.#destinationModel.getById(this.#tripEvent.destination);
 
-    this.#offersList = [...offerModel.offers];
-    this.#offersFiltered = offerModel.getByType(tripEvent.type);
-    this.#destinationsList = [...destinationModel.destinations];
+    this.#destinationsList = [...this.#destinationModel.destinations];
 
     this.#tripEventComponent = new TripEventView({
       tripEvent: this.#tripEvent,
@@ -67,7 +69,7 @@ export default class TripEventPresenter {
       },
       onFavoriteClick: () => {
         this.#tripEvent.favorite = !this.#tripEvent.favorite;
-        this.#onDataChange(this.#tripEvent, destinationModel, offerModel);
+        this.#onDataChange(UserAction.UPDATE_EVENT, UpdateType.PATCH, this.#tripEvent);
       }
     });
 
@@ -75,16 +77,19 @@ export default class TripEventPresenter {
       tripEvent: this.#tripEvent,
       offersList: this.#offersList,
       destinationsList: this.#destinationsList,
-      destination: this.#destination,
       onFormSubmit: (updatedTripEvent) => {
-        this.#onDataChange(updatedTripEvent, destinationModel, offerModel);
+        this.#onDataChange(UserAction.UPDATE_EVENT,
+          isMinorChange ? UpdateType.MINOR : UpdateType.PATCH,
+          updatedTripEvent
+        );
         this.#replaceFormToEvent();
-        document.removeEventListener('keydown', this.#escKeyDownHandler);
       },
       onCloseClick: () => {
         this.#replaceFormToEvent();
-        document.removeEventListener('keydown', this.#escKeyDownHandler);
       },
+      onDeleteClick: (updatedTripEvent) => {
+        this.#onDataChange(UserAction.DELETE_EVENT, UpdateType.MINOR, updatedTripEvent);
+      }
     });
 
     if(!prevTripEventComponent || !prevEditFormComponent) {

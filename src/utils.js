@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { HOURS_IN_DAY, MINUTS_IN_HOUR, DATE_FORMAT, DATE_TIME_FORMAT, TIME_FORMAT } from './constants';
+import { HOURS_IN_DAY, MINUTS_IN_HOUR, DATE_FORMAT, DATE_TIME_FORMAT, TIME_FORMAT, FilterType, SortType } from './constants';
 
 function humanizeEventDate(eventDate) {
   return eventDate ? dayjs(eventDate).format(DATE_FORMAT) : '';
@@ -51,7 +51,26 @@ function updateItem(items, update) {
 const sortDayAscending = (firstElement, secondElement) => dayjs(firstElement.startTime).diff(secondElement.startTime);
 const sortTimeAscending = (firstElement, secondElement) => dayjs(firstElement.endTime).diff(firstElement.startTime) - dayjs(secondElement.endTime).diff(secondElement.startTime);
 const sortPriceAscending = (firstElement, secondElement) => firstElement.price - secondElement.price;
+const sorting = {
+  [SortType.DAY]: (tripEvents) => [...tripEvents].sort(sortDayAscending),
+  [SortType.TIME]: (tripEvents) => [...tripEvents].sort(sortTimeAscending),
+  [SortType.PRICE]: (tripEvents) => [...tripEvents].sort(sortPriceAscending),
+};
 
+const isTripEventPresent = (tripEvent) =>
+  dayjs().isAfter(tripEvent.startTime) && dayjs().isBefore(tripEvent.endTime);
+const isTripEventFuture = (tripEvent) => dayjs().isAfter(tripEvent.startTime);
+const isTripEventPast = (tripEvent) => dayjs().isBefore(tripEvent.startTime);
+const filtering = {
+  [FilterType.EVERYTHING]: (tripEvents) => [...tripEvents],
+  [FilterType.FUTURE]: (tripEvents) => tripEvents.filter(isTripEventFuture),
+  [FilterType.PRESENT]: (tripEvents) => tripEvents.filter(isTripEventPresent),
+  [FilterType.PAST]: (tripEvents) => tripEvents.filter(isTripEventPast)
+};
+
+const isMinorChange = (tripEventA, tripEventB) => tripEventA.startTime !== tripEventB.startTime ||
+  tripEventA.price !== tripEventB.price ||
+  getDuration(tripEventA.startTime, tripEventA.endTime) !== getDuration(tripEventA.startTime, tripEventB.endTime);
 
 export {
   getRandomArrayElement,
@@ -64,5 +83,8 @@ export {
   updateItem,
   sortDayAscending,
   sortTimeAscending,
-  sortPriceAscending
+  sortPriceAscending,
+  isMinorChange,
+  filtering,
+  sorting
 };

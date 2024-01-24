@@ -51,4 +51,17 @@ const mockTripEvents = [
 
 const getMockTripEvents = () => mockTripEvents;
 
-export { getMockTripEvents };
+function updateTripEvent(data) {
+  return data;
+}
+
+function addTripEvent(data) {
+  return data;
+}
+
+function deleteTripEvent(data) {
+  // delete tripEvent
+  return data;
+}
+
+export { getMockTripEvents,updateTripEvent, addTripEvent, deleteTripEvent };

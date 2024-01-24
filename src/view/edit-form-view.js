@@ -99,12 +99,13 @@ function createDestinationOptionsTemplate(destinationsList) {
   return destinationsList.map((destination) => `<option value="${destination.name}"></option>`).join('');
 }
 
-function createEditFormTemplate(state, offersList, destinationsList, currentDestination) {
-  const { type, startTime, endTime, price, offers} = state;
+function createEditFormTemplate(state, offersList, destinationsList) {
+  const { type, startTime, endTime, price, offers, destination} = state;
   const eventTypeTemplate = createEventTypeTemplate(state);
   const startDate = createDateTimeString(startTime);
   const endDate = createDateTimeString(endTime);
   const destinationOptionsTemplate = createDestinationOptionsTemplate(destinationsList);
+  const currentDestination = destinationsList.find(({id}) => id === destination);
   const offersTemplate = createOffersTemplate(offers, offersList, type);
 
   return `<li class="trip-events__item">
@@ -167,20 +168,27 @@ function createEditFormTemplate(state, offersList, destinationsList, currentDest
 export default class EditFormView extends AbstractStatefulView {
   #offersList = null;
   #destinationsList = null;
-  #currentDestination = null;
   #handleFormSubmit = null;
   #handleCloseClick = null;
+  #handleDeleteClick = null;
   #datepickerFrom = null;
   #datepickerTo = null;
 
-  constructor ({tripEvent = BLANK_TRIP_EVENT, offersList, destinationsList, destination = {}, onFormSubmit, onCloseClick}) {
+  constructor ({
+    tripEvent = BLANK_TRIP_EVENT,
+    offersList,
+    destinationsList,
+    onFormSubmit,
+    onCloseClick,
+    onDeleteClick
+  }) {
     super();
     this._setState(tripEvent);
     this.#offersList = offersList;
     this.#destinationsList = destinationsList;
-    this.#currentDestination = destination;
     this.#handleFormSubmit = onFormSubmit;
     this.#handleCloseClick = onCloseClick;
+    this.#handleDeleteClick = onDeleteClick;
 
     this._restoreHandlers();
   }
@@ -199,12 +207,13 @@ export default class EditFormView extends AbstractStatefulView {
   }
 
   get template() {
-    return createEditFormTemplate(this._state, this.#offersList, this.#destinationsList, this.#currentDestination);
+    return createEditFormTemplate(this._state, this.#offersList, this.#destinationsList);
   }
 
   _restoreHandlers() {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeClickHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteClickHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationInputHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
@@ -250,10 +259,15 @@ export default class EditFormView extends AbstractStatefulView {
     this.#handleCloseClick();
   };
 
+  #deleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteClick(this._state);
+  };
+
   #destinationInputHandler = (evt) => {
     evt.preventDefault();
     const updatedDestination = this.#destinationsList.find((value) => value.name === evt.target.value);
-    this._setState({
+    this.updateElement({
       destination: updatedDestination.id.toString()
     });
   };

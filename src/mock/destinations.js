@@ -21,7 +21,8 @@ function setupDestination() {
   return {
     id: ID.toString(),
     name: CITIES[ID - 1],
-    description: getDescription(),
+    description: `This is ${CITIES[ID - 1]} description.
+    ${getDescription()}`,
     pictures: Array.from({length: getRandomNumber(0, MAX_PICTURES_COUNT)}, () => ({
       src: `https://loremflickr.com/248/152?random=${getRandomNumber(0, 1000)}`,
       description: getRandomArrayElement(EVENT_DESCRIPTIONS)
