@@ -57,10 +57,9 @@ const sorting = {
   [SortType.PRICE]: (tripEvents) => [...tripEvents].sort(sortPriceAscending),
 };
 
-const isTripEventPresent = (tripEvent) =>
-  dayjs().isAfter(tripEvent.startTime) && dayjs().isBefore(tripEvent.endTime);
-const isTripEventFuture = (tripEvent) => dayjs().isAfter(tripEvent.startTime);
-const isTripEventPast = (tripEvent) => dayjs().isBefore(tripEvent.startTime);
+const isTripEventPresent = (tripEvent) => dayjs().isSame(tripEvent.startTime, 'day');
+const isTripEventFuture = (tripEvent) => dayjs().isBefore(tripEvent.startTime, 'day');
+const isTripEventPast = (tripEvent) => dayjs().isAfter(tripEvent.startTime, 'day');
 const filtering = {
   [FilterType.EVERYTHING]: (tripEvents) => [...tripEvents],
   [FilterType.FUTURE]: (tripEvents) => tripEvents.filter(isTripEventFuture),
