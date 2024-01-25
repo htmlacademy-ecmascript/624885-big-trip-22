@@ -53,7 +53,7 @@ const FILTERS = [
   {
     type: FilterType.FUTURE,
     isChoosen: false,
-    isDisabled: true
+    isDisabled: false
   },
   {
     type: FilterType.PRESENT,

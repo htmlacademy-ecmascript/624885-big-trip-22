@@ -12,7 +12,11 @@ const destinationModel = new DestinationModel();
 const filterModel = new FilterModel();
 const tripEventModel = new TripEventModel();
 const offerModel = new OfferModel();
-const headerPresenter = new HeaderPresenter({ headerContainer: siteInfoElement });
+const headerPresenter = new HeaderPresenter({
+  headerContainer: siteInfoElement,
+  filterModel,
+  tripEventModel
+});
 const tripEventsPresenter = new TripEventsPresenter({
   tripEventsContainer: siteMainElement,
   tripEventModel,
