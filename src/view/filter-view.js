@@ -2,7 +2,7 @@ import AbstractView from '../framework/view/abstract-view.js';
 
 function createListFilterTemplate(filters, currentFilter) {
   return filters.reduce(
-    (markup, {type, isChoosen, isDisabled}) => `${markup}
+    (markup, {type, isDisabled}) => `${markup}
       <div class="trip-filters__filter">
       <input
         id="filter-${type}"
