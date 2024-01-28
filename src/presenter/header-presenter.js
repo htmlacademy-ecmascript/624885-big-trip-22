@@ -1,6 +1,5 @@
 import {render, RenderPosition} from '../framework/render.js';
 import TripInfoView from '../view/trip-info-view.js';
-import NewEventButtonView from '../view/new-event-button-view.js';
 import FilterPresenter from './fiter-presenter.js';
 
 export default class HeaderPresenter {
@@ -25,6 +24,5 @@ export default class HeaderPresenter {
     filterPresenter.init();
 
     render(new TripInfoView(), this.#headerContainer, RenderPosition.AFTERBEGIN);
-    render(new NewEventButtonView(), this.#headerContainer);
   }
 }

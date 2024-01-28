@@ -4,7 +4,8 @@ import ListEmptyView from '../view/list-empty-view.js';
 import TripEventPresenter from './trip-event-presenter.js';
 import { filtering, sorting } from '../utils.js';
 import SortPresenter from './sort-presenter.js';
-import { SortType, UpdateType, UserAction } from '../constants.js';
+import { FilterType, SortType, UpdateType, UserAction } from '../constants.js';
+import NewTripEventPresenter from './new-trip-event-presenter.js';
 
 export default class TripEventsPresenter {
   #tripEventListComponent = new TripEventListView();
@@ -15,20 +16,38 @@ export default class TripEventsPresenter {
   #filterModel = null;
   #offerModel = null;
 
-  #tripEvents = [];
   #tripEventPresenters = new Map();
 
   #currentSortType = SortType.DAY;
 
-  constructor({tripEventsContainer, tripEventModel, destinationModel, filterModel, offerModel}) {
+  #newTripEventPresenter = null;
+  #onNewTripEventDestroy = null;
+
+  constructor({
+    tripEventsContainer,
+    tripEventModel,
+    destinationModel,
+    filterModel,
+    offerModel,
+    onNewTripEventDestroy
+  }) {
     this.#tripEventsContainer = tripEventsContainer;
     this.#tripEventModel = tripEventModel;
     this.#destinationModel = destinationModel;
     this.#filterModel = filterModel;
     this.#offerModel = offerModel;
+    this.#onNewTripEventDestroy = onNewTripEventDestroy;
 
     this.#tripEventModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
+
+    this.#newTripEventPresenter = new NewTripEventPresenter({
+      tripEventListContainer: this.#tripEventListComponent.element,
+      onDataChange: this.#handleViewAction,
+      onDestroy: this.#onNewTripEventDestroy,
+      destinationModel: this.#destinationModel,
+      offerModel: this.#offerModel
+    });
   }
 
   #renderSort() {
@@ -83,8 +102,13 @@ export default class TripEventsPresenter {
     }
   };
 
-  #handleModeChange = () => {
+  #closeAllEditForms = () => {
     this.#tripEventPresenters.forEach((presenter) => presenter.resetView());
+  };
+
+  #handleModeChange = () => {
+    this.#closeAllEditForms();
+    this.#newTripEventPresenter.destroy();
   };
 
   #handleModelEvent = (updateType, data) => {
@@ -130,6 +154,13 @@ export default class TripEventsPresenter {
 
     this.#renderSort();
     this.#renderTripEvents();
+  }
+
+  createTripEvent() {
+    this.#currentSortType = SortType.DAY;
+    this.#filterModel.set(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#handleModeChange();
+    this.#newTripEventPresenter.init();
   }
 }
 

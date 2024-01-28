@@ -30,8 +30,8 @@ const EVENT_TYPES = [
 const BLANK_TRIP_EVENT = {
   type: 'flight',
   destination: '',
-  startTime: new Date(),
-  endTime: new Date(),
+  startTime: '',
+  endTime: '',
   price: 0,
   favorite: false,
   offers: []

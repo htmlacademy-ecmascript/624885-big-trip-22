@@ -71,6 +71,8 @@ const isMinorChange = (tripEventA, tripEventB) => tripEventA.startTime !== tripE
   tripEventA.price !== tripEventB.price ||
   getDuration(tripEventA.startTime, tripEventA.endTime) !== getDuration(tripEventA.startTime, tripEventB.endTime);
 
+const checkPriceIsNumeric = (price) => /^\d+$/.test(+price);
+
 export {
   getRandomArrayElement,
   getRandomNumber,
@@ -85,5 +87,6 @@ export {
   sortPriceAscending,
   isMinorChange,
   filtering,
-  sorting
+  sorting,
+  checkPriceIsNumeric
 };

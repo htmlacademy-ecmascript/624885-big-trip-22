@@ -4,6 +4,8 @@ import OfferModel from './model/offer-model.js';
 import TripEventModel from './model/trip-event-model.js';
 import HeaderPresenter from './presenter/header-presenter.js';
 import TripEventsPresenter from './presenter/trip-events-presenter.js';
+import NewEventButtonView from './view/new-event-button-view.js';
+import {render} from './framework/render.js';
 
 
 const siteInfoElement = document.querySelector('.trip-main');
@@ -22,8 +24,22 @@ const tripEventsPresenter = new TripEventsPresenter({
   tripEventModel,
   destinationModel,
   filterModel,
-  offerModel
+  offerModel,
+  onNewTripEventDestroy: handleNewEventDestroy
 });
 
 tripEventsPresenter.init();
 headerPresenter.init();
+
+const newEventButtonComponent = new NewEventButtonView({
+  onClick: handleNewEventButtonClick
+});
+function handleNewEventButtonClick() {
+  tripEventsPresenter.createTripEvent();
+  newEventButtonComponent.element.disabled = true;
+}
+function handleNewEventDestroy() {
+  newEventButtonComponent.element.disabled = false;
+}
+
+render(newEventButtonComponent, siteInfoElement);
