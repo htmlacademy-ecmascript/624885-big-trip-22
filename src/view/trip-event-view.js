@@ -55,7 +55,7 @@ function createTripEventTemplate(tripEvent, offersList, destination) {
 
 export default class TripEventView extends AbstractView {
   #tripEvent = null;
-  #offersList = null;
+  #offersList = [];
   #destination = null;
   #handleEditClick = null;
   #handleFavoriteClick = null;
