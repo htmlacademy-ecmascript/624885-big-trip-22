@@ -4,10 +4,15 @@ import { updateItem } from '../utils.js';
 
 export default class TripEventModel extends Observable {
   #tripEvents = [];
+  #tripEventApiService = null;
 
-  constructor() {
+  constructor({tripEventApiService}) {
     super();
     this.#tripEvents = getMockTripEvents();
+    this.#tripEventApiService = tripEventApiService;
+    this.#tripEventApiService.tripEvents.then((tripEvents) => {
+      console.log(tripEvents.map(this.#adaptToClient));
+    });
   }
 
   get tripEvents() {
@@ -34,5 +39,22 @@ export default class TripEventModel extends Observable {
     deleteTripEvent(tripEvent);
     this.#tripEvents = this.#tripEvents.filter((item) => item.id !== tripEvent.id);
     this._notify(updateType, tripEvent);
+  }
+
+  #adaptToClient(tripEvent) {
+    const adaptedTripEvent = {
+      ...tripEvent,
+      startTime: tripEvent['date_from'],
+      endTime: tripEvent['date_to'],
+      price: tripEvent['base_price'],
+      favorite: tripEvent['is_favorite'],
+    };
+
+    delete adaptedTripEvent['date_from'];
+    delete adaptedTripEvent['date_to'];
+    delete adaptedTripEvent['base_price'];
+    delete adaptedTripEvent['is_favorite'];
+
+    return adaptedTripEvent;
   }
 }
