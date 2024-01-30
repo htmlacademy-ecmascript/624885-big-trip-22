@@ -30,8 +30,8 @@ const EVENT_TYPES = [
 const BLANK_TRIP_EVENT = {
   type: 'flight',
   destination: '',
-  startTime: new Date(),
-  endTime: new Date(),
+  startTime: '',
+  endTime: '',
   price: 0,
   favorite: false,
   offers: []
@@ -53,7 +53,7 @@ const FILTERS = [
   {
     type: FilterType.FUTURE,
     isChoosen: false,
-    isDisabled: true
+    isDisabled: false
   },
   {
     type: FilterType.PRESENT,
@@ -115,6 +115,18 @@ const Mode = {
   EDITING: 'editing'
 };
 
+const UserAction = {
+  UPDATE_EVENT: 'update_event',
+  DELETE_EVENT: 'delete_event',
+  CREATE_EVENT: 'create_event'
+};
+
+const UpdateType = {
+  PATCH: 'patch',
+  MINOR: 'minor',
+  MAJOR: 'major'
+};
+
 export {
   MINUTS_IN_HOUR,
   HOURS_IN_DAY,
@@ -129,5 +141,8 @@ export {
   EmptyMessage,
   FilterType,
   sorts,
-  Mode
+  Mode,
+  UserAction,
+  UpdateType,
+  SortType
 };

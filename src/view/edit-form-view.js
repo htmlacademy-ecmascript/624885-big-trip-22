@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { createDateTimeString } from '../utils.js';
+import { createDateTimeString, checkPriceIsNumeric } from '../utils.js';
 import { BLANK_TRIP_EVENT } from '../constants.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
@@ -91,6 +91,28 @@ function createOffersTemplate(offers, offersList, type) {
     ).join('');
 }
 
+function createDestinationDescriptionTemplate(currentDestination) {
+  return `<section class="event__section  event__section--destination">
+    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+    <p class="event__destination-description">${currentDestination?.description || ''}</p>
+    <div class="event__photos-container">
+      <div class="event__photos-tape">
+        ${createDestinationPicturesTemplate(currentDestination?.pictures || [])}
+      </div>
+    </div>
+  </section>`;
+}
+
+function createRollupButtonTemplate(isNewTripEvent) {
+  if(isNewTripEvent) {
+    return '';
+  } else {
+    return `<button class="event__rollup-btn" type="button">
+    <span class="visually-hidden">Open event</span>
+  </button>`;
+  }
+}
+
 function createDestinationPicturesTemplate(pictures) {
   return pictures.map((picture) => `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`).join('');
 }
@@ -99,12 +121,13 @@ function createDestinationOptionsTemplate(destinationsList) {
   return destinationsList.map((destination) => `<option value="${destination.name}"></option>`).join('');
 }
 
-function createEditFormTemplate(state, offersList, destinationsList, currentDestination) {
-  const { type, startTime, endTime, price, offers} = state;
+function createEditFormTemplate(state, offersList, destinationsList, isNewTripEvent) {
+  const { type, startTime, endTime, price, offers, destination} = state;
   const eventTypeTemplate = createEventTypeTemplate(state);
   const startDate = createDateTimeString(startTime);
   const endDate = createDateTimeString(endTime);
   const destinationOptionsTemplate = createDestinationOptionsTemplate(destinationsList);
+  const currentDestination = destinationsList.find(({id}) => id === destination);
   const offersTemplate = createOffersTemplate(offers, offersList, type);
 
   return `<li class="trip-events__item">
@@ -115,7 +138,7 @@ function createEditFormTemplate(state, offersList, destinationsList, currentDest
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${currentDestination.name || ''}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${currentDestination?.name || ''}" list="destination-list-1">
           <datalist id="destination-list-1">
             ${destinationOptionsTemplate}
           </datalist>
@@ -138,10 +161,10 @@ function createEditFormTemplate(state, offersList, destinationsList, currentDest
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Delete</button>
-        <button class="event__rollup-btn" type="button">
-          <span class="visually-hidden">Open event</span>
+        <button class="event__reset-btn" type="reset">
+          ${isNewTripEvent ? 'Cancel' : 'Delete'}
         </button>
+        ${createRollupButtonTemplate(isNewTripEvent)}
       </header>
       <section class="event__details">
         <section class="event__section  event__section--offers">
@@ -150,15 +173,7 @@ function createEditFormTemplate(state, offersList, destinationsList, currentDest
             ${offersTemplate}
           </div>
         </section>
-        <section class="event__section  event__section--destination">
-          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${currentDestination.description || ''}</p>
-          <div class="event__photos-container">
-            <div class="event__photos-tape">
-              ${createDestinationPicturesTemplate(currentDestination.pictures || [])}
-            </div>
-          </div>
-        </section>
+        ${currentDestination ? createDestinationDescriptionTemplate(currentDestination) : ''}
       </section>
     </form>
   </li>`;
@@ -167,20 +182,31 @@ function createEditFormTemplate(state, offersList, destinationsList, currentDest
 export default class EditFormView extends AbstractStatefulView {
   #offersList = null;
   #destinationsList = null;
-  #currentDestination = null;
   #handleFormSubmit = null;
   #handleCloseClick = null;
+  #handleDeleteClick = null;
+  #isNewTripEvent = null;
+
   #datepickerFrom = null;
   #datepickerTo = null;
 
-  constructor ({tripEvent = BLANK_TRIP_EVENT, offersList, destinationsList, destination = {}, onFormSubmit, onCloseClick}) {
+  constructor ({
+    tripEvent = BLANK_TRIP_EVENT,
+    offersList,
+    destinationsList,
+    onFormSubmit,
+    onCloseClick,
+    onDeleteClick,
+    isNewTripEvent
+  }) {
     super();
     this._setState(tripEvent);
     this.#offersList = offersList;
     this.#destinationsList = destinationsList;
-    this.#currentDestination = destination;
     this.#handleFormSubmit = onFormSubmit;
     this.#handleCloseClick = onCloseClick;
+    this.#handleDeleteClick = onDeleteClick;
+    this.#isNewTripEvent = isNewTripEvent;
 
     this._restoreHandlers();
   }
@@ -199,16 +225,19 @@ export default class EditFormView extends AbstractStatefulView {
   }
 
   get template() {
-    return createEditFormTemplate(this._state, this.#offersList, this.#destinationsList, this.#currentDestination);
+    return createEditFormTemplate(this._state, this.#offersList, this.#destinationsList, this.#isNewTripEvent);
   }
 
   _restoreHandlers() {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeClickHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteClickHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationInputHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
     this.element.querySelector('.event__available-offers').addEventListener('change', this.#offerChangeHandler);
+    if(!this.#isNewTripEvent) {
+      this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeClickHandler);
+    }
 
     this.#setDatepickers();
   }
@@ -250,10 +279,20 @@ export default class EditFormView extends AbstractStatefulView {
     this.#handleCloseClick();
   };
 
+  #deleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteClick(this._state);
+  };
+
   #destinationInputHandler = (evt) => {
     evt.preventDefault();
+    evt.target.setCustomValidity('');
     const updatedDestination = this.#destinationsList.find((value) => value.name === evt.target.value);
-    this._setState({
+    if (!updatedDestination) {
+      evt.target.setCustomValidity('Target must be from list');
+      return;
+    }
+    this.updateElement({
       destination: updatedDestination.id.toString()
     });
   };
@@ -268,6 +307,11 @@ export default class EditFormView extends AbstractStatefulView {
 
   #priceInputHandler = (evt) => {
     evt.preventDefault();
+    evt.target.setCustomValidity('');
+    if(!checkPriceIsNumeric(evt.target.value)) {
+      evt.target.setCustomValidity('Price must be number');
+      return;
+    }
     this._setState({price: evt.target.value});
   };
 

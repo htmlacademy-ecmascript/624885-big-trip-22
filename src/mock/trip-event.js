@@ -19,8 +19,8 @@ const mockTripEvents = [
     id: nanoid(),
     type: EVENT_TYPES[0],
     destination: getRandomNumber(0, CITIES.length).toString(),
-    startTime: new Date('2023-12-02T09:15'),
-    endTime: new Date('2023-12-02T13:30'),
+    startTime: new Date('2024-01-25T09:15'),
+    endTime: new Date('2024-01-25T13:30'),
     price: getRandomNumber(10, 5000),
     favorite: false,
     offers: [1]
@@ -29,8 +29,8 @@ const mockTripEvents = [
     id: nanoid(),
     type: EVENT_TYPES[1],
     destination: getRandomNumber(0, CITIES.length).toString(),
-    startTime: new Date('2023-12-02T17:00'),
-    endTime: new Date('2023-12-03T18:30'),
+    startTime: new Date('2024-01-28T17:00'),
+    endTime: new Date('2024-01-28T18:30'),
     price: getRandomNumber(10, 5000),
     favorite: true,
     offers: []
@@ -51,4 +51,17 @@ const mockTripEvents = [
 
 const getMockTripEvents = () => mockTripEvents;
 
-export { getMockTripEvents };
+function updateTripEvent(data) {
+  return data;
+}
+
+function addTripEvent(data) {
+  return data;
+}
+
+function deleteTripEvent(data) {
+  // delete tripEvent
+  return data;
+}
+
+export { getMockTripEvents,updateTripEvent, addTripEvent, deleteTripEvent };
