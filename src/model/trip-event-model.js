@@ -17,8 +17,10 @@ export default class TripEventModel extends Observable {
 
   async init() {
     try {
-      await this.#destinationModel.init();
-      await this.#offerModel.init();
+      await Promise.all([
+        this.#destinationModel.init(),
+        this.#offerModel.init()
+      ]);
       const tripEvents = await this.#tripEventApiService.tripEvents;
       this.#tripEvents = tripEvents.map(this.#adaptToClient);
     } catch (err) {
