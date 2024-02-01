@@ -286,12 +286,13 @@ export default class EditFormView extends AbstractStatefulView {
 
   #destinationInputHandler = (evt) => {
     evt.preventDefault();
-    evt.target.setCustomValidity('');
+    //debugger
+    //evt.target.setCustomValidity('');
     const updatedDestination = this.#destinationsList.find((value) => value.name === evt.target.value);
-    if (!updatedDestination) {
-      evt.target.setCustomValidity('Target must be from list');
-      return;
-    }
+    // if (!updatedDestination) {
+    //   evt.target.setCustomValidity('Target must be from list');
+    //   return;
+    // }
     this.updateElement({
       destination: updatedDestination.id.toString()
     });
