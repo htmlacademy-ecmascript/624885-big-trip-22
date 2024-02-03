@@ -5,8 +5,20 @@ const DATE_FORMAT = 'MMM D';
 const DATE_TIME_FORMAT = 'DD/MM/YY HH:mm';
 const TIME_FORMAT = 'HH:mm';
 
+const TripEventTypes = {
+  TAXI: 'taxi',
+  BUS: 'bus',
+  TRAIN: 'train',
+  SHIP: 'ship',
+  DRIVE: 'drive',
+  FLIGHT: 'flight',
+  CHECK_IN: 'check-in',
+  SIGHTSEEING: 'sightseeing',
+  RESTAURANT: 'restaurant'
+};
+
 const BLANK_TRIP_EVENT = {
-  type: 'flight',
+  type: TripEventTypes.FLIGHT,
   destination: '',
   startTime: '',
   endTime: '',
@@ -122,6 +134,11 @@ const SourceURL = {
   OFFERS: 'offers'
 };
 
+const TimeLimit = {
+  LOWER_LIMIT: 300,
+  UPPER_LIMIT: 1000
+};
+
 export {
   MINUTS_IN_HOUR,
   HOURS_IN_DAY,
@@ -140,5 +157,7 @@ export {
   Method,
   AUTHORIZATION,
   END_POINT,
-  SourceURL
+  SourceURL,
+  TimeLimit,
+  TripEventTypes
 };

@@ -49,8 +49,8 @@ function updateItem(items, update) {
 }
 
 const sortDayAscending = (firstElement, secondElement) => dayjs(firstElement.startTime).diff(secondElement.startTime);
-const sortTimeAscending = (firstElement, secondElement) => dayjs(firstElement.endTime).diff(firstElement.startTime) - dayjs(secondElement.endTime).diff(secondElement.startTime);
-const sortPriceAscending = (firstElement, secondElement) => firstElement.price - secondElement.price;
+const sortTimeAscending = (firstElement, secondElement) => dayjs(secondElement.endTime).diff(secondElement.startTime) - dayjs(firstElement.endTime).diff(firstElement.startTime);
+const sortPriceAscending = (firstElement, secondElement) => secondElement.price - firstElement.price;
 const sorting = {
   [SortType.DAY]: (tripEvents) => [...tripEvents].sort(sortDayAscending),
   [SortType.TIME]: (tripEvents) => [...tripEvents].sort(sortTimeAscending),
@@ -73,6 +73,8 @@ const isMinorChange = (tripEventA, tripEventB) => tripEventA.startTime !== tripE
 
 const checkPriceIsNumeric = (price) => /^\d+$/.test(+price);
 
+const capitalize = (str) => str[0].toUpperCase() + str.slice(1);
+
 export {
   getRandomArrayElement,
   getRandomNumber,
@@ -88,5 +90,6 @@ export {
   isMinorChange,
   filtering,
   sorting,
-  checkPriceIsNumeric
+  checkPriceIsNumeric,
+  capitalize
 };

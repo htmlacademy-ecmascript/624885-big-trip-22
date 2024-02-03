@@ -69,10 +69,26 @@ export default class NewTripEventPresenter {
       UpdateType.MINOR,
       tripEvent
     );
-    this.destroy();
   };
 
   #handleCancelClick = () => {
     this.destroy();
   };
+
+  setSaving() {
+    this.#tripEventEditComponent.updateElement({
+      isDisabled: true,
+      isSaving: true
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#tripEventEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+      });
+    };
+    this.#tripEventEditComponent.shake(resetFormState);
+  }
 }
