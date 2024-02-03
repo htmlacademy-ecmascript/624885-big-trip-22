@@ -1,6 +1,7 @@
-import { render } from '../framework/render.js';
+import { render,remove } from '../framework/render.js';
 import TripEventListView from '../view/trip-event-list-view.js';
 import ListEmptyView from '../view/list-empty-view.js';
+import LoadingView from '../view/loading-view.js';
 import TripEventPresenter from './trip-event-presenter.js';
 import { filtering, sorting } from '../utils.js';
 import SortPresenter from './sort-presenter.js';
@@ -9,6 +10,8 @@ import NewTripEventPresenter from './new-trip-event-presenter.js';
 
 export default class TripEventsPresenter {
   #tripEventListComponent = new TripEventListView();
+  #loadingComponent = new LoadingView();
+  #isLoading = true;
 
   #tripEventsContainer = null;
   #tripEventModel = null;
@@ -62,6 +65,10 @@ export default class TripEventsPresenter {
     render(new ListEmptyView(this.#filterModel.get), this.#tripEventsContainer);
   }
 
+  #renderLoading() {
+    render(this.#loadingComponent, this.#tripEventsContainer);
+  }
+
   #renderTripEvents() {
     render(this.#tripEventListComponent, this.#tripEventsContainer);
 
@@ -86,6 +93,7 @@ export default class TripEventsPresenter {
   #clearTripEventsList = () => {
     this.#tripEventPresenters.forEach((presenter) => presenter.destroy());
     this.#tripEventPresenters.clear();
+    remove(this.#loadingComponent);
   };
 
   #handleViewAction = (actionType, updateType, data) => {
@@ -125,6 +133,11 @@ export default class TripEventsPresenter {
         this.#clearTripEventsList();
         this.#renderTripEvents();
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderSort();
+        this.#renderTripEvents();
     }
 
   };
@@ -147,6 +160,10 @@ export default class TripEventsPresenter {
   }
 
   init() {
+    if(this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
     if(!this.tripEvents.length) {
       this.#renderListEmpty();
       return;

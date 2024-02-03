@@ -6,14 +6,22 @@ import HeaderPresenter from './presenter/header-presenter.js';
 import TripEventsPresenter from './presenter/trip-events-presenter.js';
 import NewEventButtonView from './view/new-event-button-view.js';
 import {render} from './framework/render.js';
+import TripEventApiService from './trip-event-api-service.js';
+import { AUTHORIZATION, END_POINT } from './constants.js';
 
+
+const tripEventApiService = new TripEventApiService(END_POINT, AUTHORIZATION);
 
 const siteInfoElement = document.querySelector('.trip-main');
 const siteMainElement = document.querySelector('.trip-events');
-const destinationModel = new DestinationModel();
+const destinationModel = new DestinationModel({tripEventApiService});
 const filterModel = new FilterModel();
-const tripEventModel = new TripEventModel();
-const offerModel = new OfferModel();
+const offerModel = new OfferModel({tripEventApiService});
+const tripEventModel = new TripEventModel({
+  tripEventApiService,
+  destinationModel,
+  offerModel
+});
 const headerPresenter = new HeaderPresenter({
   headerContainer: siteInfoElement,
   filterModel,
@@ -28,9 +36,6 @@ const tripEventsPresenter = new TripEventsPresenter({
   onNewTripEventDestroy: handleNewEventDestroy
 });
 
-tripEventsPresenter.init();
-headerPresenter.init();
-
 const newEventButtonComponent = new NewEventButtonView({
   onClick: handleNewEventButtonClick
 });
@@ -42,4 +47,10 @@ function handleNewEventDestroy() {
   newEventButtonComponent.element.disabled = false;
 }
 
-render(newEventButtonComponent, siteInfoElement);
+
+tripEventsPresenter.init();
+headerPresenter.init();
+tripEventModel.init()
+  .finally(() => {
+    render(newEventButtonComponent, siteInfoElement);
+  });

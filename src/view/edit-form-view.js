@@ -77,12 +77,12 @@ function createOffersTemplate(offers, offersList, type) {
       `<div class="event__offer-selector">
           <input
             class="event__offer-checkbox visually-hidden"
-            id="event-offer-${type}-${id}"
+            id="${id}"
             type="checkbox"
             name="event-offer-${type}-${id}"
             ${ offers.includes(id) ? 'checked' : ''}
           >
-          <label class="event__offer-label" for="event-offer-${type}-${id}">
+          <label class="event__offer-label" for="${id}">
             <span class="event__offer-title">${title}</span>
             &plus;&euro;&nbsp;
             <span class="event__offer-price">${price}</span>
@@ -180,8 +180,8 @@ function createEditFormTemplate(state, offersList, destinationsList, isNewTripEv
 }
 
 export default class EditFormView extends AbstractStatefulView {
-  #offersList = null;
-  #destinationsList = null;
+  #offersList = [];
+  #destinationsList = [];
   #handleFormSubmit = null;
   #handleCloseClick = null;
   #handleDeleteClick = null;
@@ -312,17 +312,17 @@ export default class EditFormView extends AbstractStatefulView {
       evt.target.setCustomValidity('Price must be number');
       return;
     }
-    this._setState({price: evt.target.value});
+    this._setState({price: +evt.target.value});
   };
 
   #offerChangeHandler = () => {
     const updatedOffers = [];
     this.element.querySelectorAll('.event__offer-checkbox').forEach((value) => {
       if(value.checked) {
-        updatedOffers.push(parseInt(value.id.split('-')[3],10));
+        updatedOffers.push(value.id);
       }
     });
-    this.updateElement({
+    this._setState({
       offers: updatedOffers
     });
   };
