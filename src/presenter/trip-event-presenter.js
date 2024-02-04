@@ -41,6 +41,7 @@ export default class TripEventPresenter {
   }
 
   #replaceFormToEvent() {
+    this.#editFormComponent.resetForm(this.#tripEvent);
     replace(this.#tripEventComponent, this.#editFormComponent);
     this.#mode = Mode.DEFAULT;
     document.removeEventListener('keydown', this.#escKeyDownHandler);

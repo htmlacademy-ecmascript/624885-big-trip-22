@@ -37,12 +37,11 @@ function createEventTypesTemplate(tripEvent) {
 }
 
 function createOffersTemplate(offers, offersList, type) {
-  if(offersList.length === 0) {
+  const currentOffersList = offersList.find((item) => item.type === type).offers;
+  if(currentOffersList.length === 0) {
     return '';
   }
-  return offersList
-    .find((item) => item.type === type)
-    .offers
+  const offersListTemplate = currentOffersList
     .map(({id, title, price}) =>
       `<div class="event__offer-selector">
           <input
@@ -59,17 +58,22 @@ function createOffersTemplate(offers, offersList, type) {
           </label>
         </div>`
     ).join('');
+  return `<section class="event__section  event__section--offers">
+    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+      <div class="event__available-offers">
+        ${offersListTemplate}
+      </div>
+    </section`;
 }
 
 function createDestinationDescriptionTemplate(currentDestination) {
+  if(currentDestination.description === '') {
+    return '';
+  }
   return `<section class="event__section  event__section--destination">
     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
     <p class="event__destination-description">${currentDestination?.description || ''}</p>
-    <div class="event__photos-container">
-      <div class="event__photos-tape">
-        ${createDestinationPicturesTemplate(currentDestination?.pictures || [])}
-      </div>
-    </div>
+    ${createDestinationPicturesTemplate(currentDestination?.pictures || [])}
   </section>`;
 }
 
@@ -84,7 +88,15 @@ function createRollupButtonTemplate(isNewTripEvent) {
 }
 
 function createDestinationPicturesTemplate(pictures) {
-  return pictures.map((picture) => `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`).join('');
+  if(pictures.length === 0) {
+    return '';
+  }
+  const picturesTape = pictures.map((picture) => `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`).join('');
+  return `<div class="event__photos-container">
+      <div class="event__photos-tape">
+        ${picturesTape}
+      </div>
+    </div>`;
 }
 
 function createDestinationOptionsTemplate(destinationsList) {
@@ -140,12 +152,7 @@ function createEditFormTemplate(state, offersList, destinationsList, isNewTripEv
         ${createRollupButtonTemplate(isNewTripEvent)}
       </header>
       <section class="event__details">
-        <section class="event__section  event__section--offers">
-        <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-          <div class="event__available-offers">
-            ${offersTemplate}
-          </div>
-        </section>
+        ${offersTemplate}
         ${currentDestination ? createDestinationDescriptionTemplate(currentDestination) : ''}
       </section>
     </form>
@@ -153,6 +160,7 @@ function createEditFormTemplate(state, offersList, destinationsList, isNewTripEv
 }
 
 export default class EditFormView extends AbstractStatefulView {
+  #tripEvent = null;
   #offersList = [];
   #destinationsList = [];
   #handleFormSubmit = null;
@@ -173,6 +181,7 @@ export default class EditFormView extends AbstractStatefulView {
     isNewTripEvent
   }) {
     super();
+    this.#tripEvent = tripEvent;
     this._setState(EditFormView.parseTripEventToState(tripEvent));
     this.#offersList = offersList;
     this.#destinationsList = destinationsList;
@@ -207,12 +216,16 @@ export default class EditFormView extends AbstractStatefulView {
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationInputHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
-    this.element.querySelector('.event__available-offers').addEventListener('change', this.#offerChangeHandler);
+    this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offerChangeHandler);
     if(!this.#isNewTripEvent) {
       this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeClickHandler);
     }
 
     this.#setDatepickers();
+  }
+
+  resetForm(tripEvent) {
+    this.updateElement(EditFormView.parseTripEventToState(tripEvent));
   }
 
   #setDatepickers() {
