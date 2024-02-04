@@ -1,13 +1,16 @@
-import {render, RenderPosition} from '../framework/render.js';
-import TripInfoView from '../view/trip-info-view.js';
+
 import FilterPresenter from './fiter-presenter.js';
 
 export default class HeaderPresenter {
+  #tripEventModel = null;
   #headerContainer = null;
   #filterModel = null;
-  #tripEventModel = null;
 
-  constructor({ headerContainer, filterModel, tripEventModel }) {
+  constructor({
+    headerContainer,
+    filterModel,
+    tripEventModel
+  }) {
     this.#headerContainer = headerContainer;
     this.#filterModel = filterModel;
     this.#tripEventModel = tripEventModel;
@@ -23,6 +26,5 @@ export default class HeaderPresenter {
     });
     filterPresenter.init();
 
-    render(new TripInfoView(), this.#headerContainer, RenderPosition.AFTERBEGIN);
   }
 }

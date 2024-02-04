@@ -140,6 +140,8 @@ const TimeLimit = {
   UPPER_LIMIT: 1000
 };
 
+const TRIP_ITEMS_COUNT = 3;
+
 export {
   MINUTS_IN_HOUR,
   HOURS_IN_DAY,
@@ -160,5 +162,6 @@ export {
   END_POINT,
   SourceURL,
   TimeLimit,
-  TripEventTypes
+  TripEventTypes,
+  TRIP_ITEMS_COUNT
 };
