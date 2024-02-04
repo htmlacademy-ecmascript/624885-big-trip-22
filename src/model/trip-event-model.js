@@ -38,10 +38,15 @@ export default class TripEventModel extends Observable {
     return this.#tripEvents.find((tripEvent) => tripEvent.id === id);
   }
 
-  addTripEvent(updateType, tripEvent) {
-    const addedPoint = tripEvent;
-    this.#tripEvents = [...this.#tripEvents, addedPoint];
-    this._notify(updateType, addedPoint);
+  async addTripEvent(updateType, tripEvent) {
+    try {
+      const responce = await this.#tripEventApiService.addTripEvent(tripEvent);
+      const addedPoint = this.#adaptToClient(responce);
+      this.#tripEvents = [...this.#tripEvents, addedPoint];
+      this._notify(updateType, addedPoint);
+    } catch(err) {
+      throw new Error('Can not add point');
+    }
   }
 
   async updateTripEvent(updateType, tripEvent) {
@@ -55,9 +60,14 @@ export default class TripEventModel extends Observable {
     }
   }
 
-  deleteTripEvent(updateType, tripEvent) {
-    this.#tripEvents = this.#tripEvents.filter((item) => item.id !== tripEvent.id);
-    this._notify(updateType, tripEvent);
+  async deleteTripEvent(updateType, tripEvent) {
+    try {
+      await this.#tripEventApiService.deleteTripEvent(tripEvent);
+      this.#tripEvents = this.#tripEvents.filter((item) => item.id !== tripEvent.id);
+      this._notify(updateType);
+    } catch(err) {
+      throw new Error('Can not delete point');
+    }
   }
 
   #adaptToClient(tripEvent) {

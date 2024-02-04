@@ -40,11 +40,9 @@ export default class TripEventApiService extends ApiService {
     const responce = await this._load({
       url: `${SourceURL.POINTS}/${tripEvent.id}`,
       method: Method.DELETE,
-      body: JSON.stringify(this.#adaptToServer(tripEvent)),
-      headers: new Headers({'Content-Type': 'application/json'})
     });
-    const parsedResponce = await ApiService.parseResponse(responce);
-    return parsedResponce;
+
+    return responce;
   }
 
   #adaptToServer(tripEvent) {

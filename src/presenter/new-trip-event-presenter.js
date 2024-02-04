@@ -1,6 +1,5 @@
 import EditFormView from '../view/edit-form-view.js';
 import { UpdateType, UserAction } from '../constants';
-import { nanoid } from 'nanoid';
 import { RenderPosition, remove, render } from '../framework/render';
 
 export default class NewTripEventPresenter {
@@ -60,20 +59,36 @@ export default class NewTripEventPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
+      this.destroy();
     }
-    this.destroy();
   };
 
   #handleFormSubmit = (tripEvent) => {
     this.#onDataChange(
       UserAction.CREATE_EVENT,
       UpdateType.MINOR,
-      {id: nanoid(), ...tripEvent}
+      tripEvent
     );
-    this.destroy();
   };
 
   #handleCancelClick = () => {
     this.destroy();
   };
+
+  setSaving() {
+    this.#tripEventEditComponent.updateElement({
+      isDisabled: true,
+      isSaving: true
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#tripEventEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+      });
+    };
+    this.#tripEventEditComponent.shake(resetFormState);
+  }
 }

@@ -41,6 +41,7 @@ export default class TripEventPresenter {
   }
 
   #replaceFormToEvent() {
+    this.#editFormComponent.resetForm(this.#tripEvent);
     replace(this.#tripEventComponent, this.#editFormComponent);
     this.#mode = Mode.DEFAULT;
     document.removeEventListener('keydown', this.#escKeyDownHandler);
@@ -82,7 +83,7 @@ export default class TripEventPresenter {
           isMinorChange ? UpdateType.MINOR : UpdateType.PATCH,
           updatedTripEvent
         );
-        this.#replaceFormToEvent();
+
       },
       onCloseClick: () => {
         this.#replaceFormToEvent();
@@ -107,9 +108,48 @@ export default class TripEventPresenter {
     remove(prevEditFormComponent);
   }
 
+  closeForm() {
+    this.#replaceFormToEvent();
+  }
+
   resetView() {
     if(this.#mode !== Mode.DEFAULT) {
       this.#replaceFormToEvent();
+    }
+  }
+
+  setSaving() {
+    if(this.#mode === Mode.EDITING) {
+      this.#editFormComponent.updateElement({
+        isDisabled: true,
+        isSaving: true
+      });
+    }
+  }
+
+  setDeleting() {
+    if(this.#mode === Mode.EDITING) {
+      this.#editFormComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true
+      });
+    }
+  }
+
+  setAborting() {
+    if(this.#mode === Mode.DEFAULT) {
+      this.#tripEventComponent.shake();
+      return;
+    }
+    if(this.#mode === Mode.EDITING) {
+      const resetFormState = () => {
+        this.#editFormComponent.updateElement({
+          isDisabled: false,
+          isSaving: false,
+          isDeleting: false
+        });
+      };
+      this.#editFormComponent.shake(resetFormState);
     }
   }
 }

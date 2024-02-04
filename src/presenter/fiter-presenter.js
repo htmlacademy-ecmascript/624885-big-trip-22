@@ -4,7 +4,6 @@ import FilterView from '../view/filter-view.js';
 
 export default class FilterPresenter {
   #filterContainer = null;
-  #onFilterChange = null;
   #filterComponent = null;
   #filterModel = null;
   #tripEventModel = null;
@@ -23,7 +22,8 @@ export default class FilterPresenter {
 
     this.#filterComponent = new FilterView({
       onFilterChange: this.#handleFilterChange,
-      filters: FILTERS
+      filters: FILTERS,
+      currentFilter: this.#filterModel.get()
     });
     if(prevFilterComponent) {
       replace(this.#filterComponent, prevFilterComponent);
