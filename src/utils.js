@@ -13,6 +13,10 @@ function createTimeString(eventDate) {
   return eventDate ? dayjs(eventDate).format(TIME_FORMAT) : '';
 }
 
+function addLeadingZero(number) {
+  return number < 10 ? `0${number}` : +number;
+}
+
 function getDuration(startTime, endTime) {
   const totalMinuts = dayjs(endTime).diff(startTime, 'm');
   const totalHours = Math.floor(totalMinuts / MINUTS_IN_HOUR);
@@ -21,9 +25,9 @@ function getDuration(startTime, endTime) {
   const hours = totalHours % HOURS_IN_DAY;
 
   let returnString = '';
-  returnString += days ? `${days}D ` : '';
-  returnString += hours ? `${hours}H ` : '';
-  returnString += `${minuts}M`;
+  returnString += days ? `${addLeadingZero(days)}D ` : '';
+  returnString += `${addLeadingZero(hours)}H `;
+  returnString += `${addLeadingZero(minuts)}M`;
   return returnString;
 }
 
@@ -57,9 +61,10 @@ const sorting = {
   [SortType.PRICE]: (tripEvents) => [...tripEvents].sort(sortPriceAscending),
 };
 
-const isTripEventPresent = (tripEvent) => dayjs().isSame(tripEvent.startTime, 'day');
+const isTripEventPresent = (tripEvent) => dayjs().isAfter(tripEvent.startTime, 'day') &&
+  dayjs().isBefore(tripEvent.endTime, 'day');
 const isTripEventFuture = (tripEvent) => dayjs().isBefore(tripEvent.startTime, 'day');
-const isTripEventPast = (tripEvent) => dayjs().isAfter(tripEvent.startTime, 'day');
+const isTripEventPast = (tripEvent) => dayjs().isAfter(tripEvent.endTime, 'day');
 const filtering = {
   [FilterType.EVERYTHING]: (tripEvents) => [...tripEvents],
   [FilterType.FUTURE]: (tripEvents) => tripEvents.filter(isTripEventFuture),

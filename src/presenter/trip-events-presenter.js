@@ -1,4 +1,4 @@
-import { render,remove } from '../framework/render.js';
+import { render,remove, RenderPosition } from '../framework/render.js';
 import TripEventListView from '../view/trip-event-list-view.js';
 import ListEmptyView from '../view/list-empty-view.js';
 import LoadingView from '../view/loading-view.js';
@@ -8,10 +8,12 @@ import SortPresenter from './sort-presenter.js';
 import { FilterType, SortType, TimeLimit, UpdateType, UserAction } from '../constants.js';
 import NewTripEventPresenter from './new-trip-event-presenter.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
+import FailedView from '../view/failed-view.js';
 
 export default class TripEventsPresenter {
   #tripEventListComponent = new TripEventListView();
   #loadingComponent = new LoadingView();
+  #failedComponent = new FailedView();
   #listEmptyComponent = null;
   #isLoading = true;
 
@@ -28,6 +30,8 @@ export default class TripEventsPresenter {
 
   #newTripEventPresenter = null;
   #onNewTripEventDestroy = null;
+
+  #isListEmpty = false;
 
   #uiBlocker = new UiBlocker({
     lowerLimit: TimeLimit.LOWER_LIMIT,
@@ -55,11 +59,18 @@ export default class TripEventsPresenter {
     this.#newTripEventPresenter = new NewTripEventPresenter({
       tripEventListContainer: this.#tripEventListComponent.element,
       onDataChange: this.#handleViewAction,
-      onDestroy: this.#onNewTripEventDestroy,
+      onDestroy: this.#handleNewTripEventDestroy,
       destinationModel: this.#destinationModel,
       offerModel: this.#offerModel
     });
   }
+
+  #handleNewTripEventDestroy = () => {
+    if(this.#isListEmpty) {
+      this.#renderListEmpty();
+    }
+    this.#onNewTripEventDestroy();
+  };
 
   #renderSort() {
     this.#sortPresenter = new SortPresenter({
@@ -72,15 +83,20 @@ export default class TripEventsPresenter {
   #renderListEmpty() {
     this.#listEmptyComponent = new ListEmptyView(this.#filterModel.get());
     render(this.#listEmptyComponent, this.#tripEventsContainer);
+    this.#isListEmpty = true;
   }
 
   #renderLoading() {
     render(this.#loadingComponent, this.#tripEventsContainer);
   }
 
+  #renderFailedLoadData() {
+    render(this.#failedComponent, this.#tripEventsContainer);
+  }
+
   #renderTripEvents() {
     render(this.#tripEventListComponent, this.#tripEventsContainer);
-
+    this.#isListEmpty = false;
     for (let i = 0; i < this.tripEvents.length; i++) {
       this.#renderTripEvent(this.tripEvents[i], this.#destinationModel, this.#offerModel);
     }
@@ -102,12 +118,12 @@ export default class TripEventsPresenter {
   #clearTripEventsList = () => {
     this.#tripEventPresenters.forEach((presenter) => presenter.destroy());
     this.#tripEventPresenters.clear();
-    remove(this.#loadingComponent);
   };
 
   #clearBoard() {
     this.#clearTripEventsList();
-    this.#sortPresenter.destroy();
+    this.#sortPresenter?.destroy();
+    remove(this.#loadingComponent);
     remove(this.#listEmptyComponent);
   }
 
@@ -118,7 +134,6 @@ export default class TripEventsPresenter {
         this.#tripEventPresenters.get(data.id).setSaving();
         try {
           await this.#tripEventModel.updateTripEvent(updateType, data);
-          this.#tripEventPresenters.get(data.id).closeForm();
         } catch(err) {
           this.#tripEventPresenters.get(data.id).setAborting();
         }
@@ -150,7 +165,7 @@ export default class TripEventsPresenter {
 
   #handleModeChange = () => {
     this.#closeAllEditForms();
-    this.#newTripEventPresenter.destroy();
+    this.#newTripEventPresenter?.destroy();
   };
 
   #handleModelEvent = (updateType, data) => {
@@ -171,6 +186,11 @@ export default class TripEventsPresenter {
         this.#isLoading = false;
         remove(this.#loadingComponent);
         this.#renderBoard();
+        break;
+      case UpdateType.ERROR:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderFailedLoadData();
     }
 
   };
@@ -214,7 +234,11 @@ export default class TripEventsPresenter {
     this.#currentSortType = SortType.DAY;
     this.#filterModel.set(UpdateType.MAJOR, FilterType.EVERYTHING);
     this.#handleModeChange();
-    this.#newTripEventPresenter.init();
+    if(this.#isListEmpty) {
+      this.#clearBoard();
+      render(this.#tripEventListComponent, this.#tripEventsContainer, RenderPosition.AFTERBEGIN);
+    }
+    this.#newTripEventPresenter.init(this.#isListEmpty);
   }
 }
 

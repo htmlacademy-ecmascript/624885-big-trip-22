@@ -23,11 +23,11 @@ export default class TripEventModel extends Observable {
       ]);
       const tripEvents = await this.#tripEventApiService.tripEvents;
       this.#tripEvents = tripEvents.map(this.#adaptToClient);
+      this._notify(UpdateType.INIT);
     } catch (err) {
       this.#tripEvents = [];
+      this._notify(UpdateType.ERROR);
     }
-
-    this._notify(UpdateType.INIT);
   }
 
   get tripEvents() {
