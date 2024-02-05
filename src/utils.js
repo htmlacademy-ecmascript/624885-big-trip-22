@@ -1,8 +1,12 @@
 import dayjs from 'dayjs';
-import { HOURS_IN_DAY, MINUTS_IN_HOUR, DATE_FORMAT, DATE_TIME_FORMAT, TIME_FORMAT, FilterType, SortType, TRIP_ITEMS_COUNT } from './constants';
+import { HOURS_IN_DAY, MINUTS_IN_HOUR, DATE_FORMAT, DATE_TIME_FORMAT, TIME_FORMAT, FilterType, SortType, TRIP_ITEMS_COUNT, TRIP_DATES_FORMAT } from './constants';
 
 function humanizeEventDate(eventDate) {
   return eventDate ? dayjs(eventDate).format(DATE_FORMAT) : '';
+}
+
+function humanizeTripDate(eventDate) {
+  return eventDate ? dayjs(eventDate).format(TRIP_DATES_FORMAT) : '';
 }
 
 function createDateTimeString(eventDate) {
@@ -64,17 +68,46 @@ const checkPriceIsNumeric = (price) => /^\d+$/.test(+price);
 const capitalize = (str) => str[0].toUpperCase() + str.slice(1);
 
 const getTripDates = (tripEvents) => {
+  if(tripEvents.length === 0) {
+    return '';
+  }
   const sortedTripEvents = sorting[SortType.DAY](tripEvents);
-  return `${humanizeEventDate(sortedTripEvents[0].startTime)} &mdash; ${humanizeEventDate(sortedTripEvents[sortedTripEvents.length - 1].endTime)}`;
+  return `${humanizeTripDate(sortedTripEvents[0].startTime)} &mdash; ${humanizeTripDate(sortedTripEvents[sortedTripEvents.length - 1].endTime)}`;
 };
 
-const getTripRoute = (tripEvents = [], destinations = []) => {
+const getTripRoute = (tripEvents, destinations) => {
+  if(tripEvents.length === 0) {
+    return '';
+  }
   const sortedTripEvents = sorting[SortType.DAY](tripEvents);
   const destinationNames = sortedTripEvents
     .map((tripEvent) => destinations
       .find((destination) => destination.id === tripEvent.destination).name);
   return destinationNames.length <= TRIP_ITEMS_COUNT ? destinationNames.join(' &mdash; ')
     : `${destinationNames.at(0)} &mdash; ... &mdash; ${destinationNames.at(-1)}`;
+};
+
+const getOffersPrice = (tripEvent, offers) => {
+  let price = 0;
+  const currentOffers = offers
+    .find((offer) => offer.type === tripEvent.type).offers;
+  for(const offer of currentOffers) {
+    if(tripEvent.offers.includes(offer.id)) {
+      price += offer.price;
+    }
+  }
+  return price;
+};
+
+const getTripPrice = (tripEvents, offers) => {
+  if(tripEvents.length === 0) {
+    return '';
+  }
+  let price = 0;
+  tripEvents.forEach((tripEvent) => {
+    price += tripEvent.price + getOffersPrice(tripEvent, offers);
+  });
+  return price;
 };
 
 export {
@@ -92,5 +125,6 @@ export {
   checkPriceIsNumeric,
   capitalize,
   getTripRoute,
-  getTripDates
+  getTripDates,
+  getTripPrice
 };

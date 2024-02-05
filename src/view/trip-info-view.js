@@ -1,5 +1,8 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { getTripDates, getTripRoute } from '../utils.js';
+import { getTripDates, getTripPrice, getTripRoute } from '../utils.js';
+
+const createPriceTemplate = (tripEvents, offers) => tripEvents.length === 0 ? ''
+  : `Total: &euro;&nbsp;<span class="trip-info__cost-value">${getTripPrice(tripEvents, offers)}</span>`;
 
 function createTripInfoTemplate(destinations,offers,tripEvents) {
   return `<section class="trip-main__trip-info  trip-info">
@@ -10,7 +13,7 @@ function createTripInfoTemplate(destinations,offers,tripEvents) {
     </div>
 
     <p class="trip-info__cost">
-      Total: &euro;&nbsp;<span class="trip-info__cost-value">1230</span>
+      ${createPriceTemplate(tripEvents, offers)}
     </p>
   </section>`;
 }
