@@ -3,6 +3,7 @@ import { createDateTimeString, checkPriceIsNumeric, capitalize } from '../utils.
 import { BLANK_TRIP_EVENT, TripEventTypes } from '../constants.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import he from 'he';
 
 function createEventTypeTemplate(type, currentType) {
   return `<div class="event__type-item">
@@ -121,7 +122,14 @@ function createEditFormTemplate(state, offersList, destinationsList, isNewTripEv
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${currentDestination?.name || ''}" list="destination-list-1">
+          <input
+            class="event__input  event__input--destination"
+            id="event-destination-1"
+            type="text"
+            name="event-destination"
+            value="${he.encode(currentDestination?.name || '')}"
+            list="destination-list-1"
+          >
           <datalist id="destination-list-1">
             ${destinationOptionsTemplate}
           </datalist>
@@ -140,7 +148,13 @@ function createEditFormTemplate(state, offersList, destinationsList, isNewTripEv
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+          <input
+            class="event__input  event__input--price"
+            id="event-price-1"
+            type="text"
+            name="event-price"
+            value="${he.encode(String(price))}"
+          >
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">

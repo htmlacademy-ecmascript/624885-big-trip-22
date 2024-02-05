@@ -1,5 +1,6 @@
-import { FILTERS, UpdateType } from '../constants.js';
+import { UpdateType } from '../constants.js';
 import { remove, render, replace } from '../framework/render.js';
+import { filtering } from '../utils.js';
 import FilterView from '../view/filter-view.js';
 
 export default class FilterPresenter {
@@ -7,6 +8,7 @@ export default class FilterPresenter {
   #filterComponent = null;
   #filterModel = null;
   #tripEventModel = null;
+  #currentFilter = null;
 
   constructor({filterContainer, filterModel, tripEventModel}) {
     this.#filterContainer = filterContainer;
@@ -17,13 +19,24 @@ export default class FilterPresenter {
     this.#tripEventModel.addObserver(this.#handleModelEvent);
   }
 
+  get filters() {
+    const tripEvents = this.#tripEventModel.tripEvents;
+
+    return Object.entries(filtering).map(([filterType, filterTripPoints]) => ({
+      type: filterType,
+      isChecked: filterType === this.#currentFilter,
+      isDisabled: !filterTripPoints(tripEvents).length
+    }));
+  }
+
   init() {
+    this.#currentFilter = this.#filterModel.get();
     const prevFilterComponent = this.#filterComponent;
 
     this.#filterComponent = new FilterView({
       onFilterChange: this.#handleFilterChange,
-      filters: FILTERS,
-      currentFilter: this.#filterModel.get()
+      filters: this.filters,
+      currentFilter: this.#currentFilter
     });
     if(prevFilterComponent) {
       replace(this.#filterComponent, prevFilterComponent);

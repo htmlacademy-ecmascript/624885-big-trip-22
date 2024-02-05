@@ -108,10 +108,6 @@ export default class TripEventPresenter {
     remove(prevEditFormComponent);
   }
 
-  closeForm() {
-    this.#replaceFormToEvent();
-  }
-
   resetView() {
     if(this.#mode !== Mode.DEFAULT) {
       this.#replaceFormToEvent();

@@ -2,6 +2,7 @@ const MINUTS_IN_HOUR = 60;
 const HOURS_IN_DAY = 24;
 
 const DATE_FORMAT = 'MMM D';
+const TRIP_DATES_FORMAT = 'D MMM';
 const DATE_TIME_FORMAT = 'DD/MM/YY HH:mm';
 const TIME_FORMAT = 'HH:mm';
 
@@ -33,29 +34,6 @@ const FilterType = {
   PRESENT: 'present',
   FUTURE: 'future'
 };
-
-const FILTERS = [
-  {
-    type: FilterType.EVERYTHING,
-    isChoosen: true,
-    isDisabled: false
-  },
-  {
-    type: FilterType.FUTURE,
-    isChoosen: false,
-    isDisabled: false
-  },
-  {
-    type: FilterType.PRESENT,
-    isChoosen: false,
-    isDisabled: false
-  },
-  {
-    type: FilterType.PAST,
-    isChoosen: false,
-    isDisabled: false
-  },
-];
 
 const EmptyMessage = {
   [FilterType.EVERYTHING]: 'Click New Event to create your first point',
@@ -115,7 +93,8 @@ const UpdateType = {
   PATCH: 'patch',
   MINOR: 'minor',
   MAJOR: 'major',
-  INIT: 'init'
+  INIT: 'init',
+  ERROR: 'error'
 };
 
 const Method = {
@@ -139,14 +118,16 @@ const TimeLimit = {
   UPPER_LIMIT: 1000
 };
 
+const TRIP_ITEMS_COUNT = 3;
+
 export {
   MINUTS_IN_HOUR,
   HOURS_IN_DAY,
   DATE_FORMAT,
+  TRIP_DATES_FORMAT,
   DATE_TIME_FORMAT,
   TIME_FORMAT,
   BLANK_TRIP_EVENT,
-  FILTERS,
   EmptyMessage,
   FilterType,
   sorts,
@@ -159,5 +140,6 @@ export {
   END_POINT,
   SourceURL,
   TimeLimit,
-  TripEventTypes
+  TripEventTypes,
+  TRIP_ITEMS_COUNT
 };
