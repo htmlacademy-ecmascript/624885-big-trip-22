@@ -83,8 +83,8 @@ const getTripRoute = (tripEvents, destinations) => {
   const destinationNames = sortedTripEvents
     .map((tripEvent) => destinations
       .find((destination) => destination.id === tripEvent.destination).name);
-  return destinationNames.length <= TRIP_ITEMS_COUNT ? destinationNames.join(' &mdash; ')
-    : `${destinationNames.at(0)} &mdash; ... &mdash; ${destinationNames.at(-1)}`;
+  return destinationNames.length <= TRIP_ITEMS_COUNT ? destinationNames.join('&nbsp;&mdash;&nbsp;')
+    : `${destinationNames.at(0)} &mdash;&nbsp;...&nbsp;&mdash; ${destinationNames.at(-1)}`;
 };
 
 const getOffersPrice = (tripEvent, offers) => {

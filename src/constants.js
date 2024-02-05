@@ -35,29 +35,6 @@ const FilterType = {
   FUTURE: 'future'
 };
 
-const FILTERS = [
-  {
-    type: FilterType.EVERYTHING,
-    isChoosen: true,
-    isDisabled: false
-  },
-  {
-    type: FilterType.FUTURE,
-    isChoosen: false,
-    isDisabled: false
-  },
-  {
-    type: FilterType.PRESENT,
-    isChoosen: false,
-    isDisabled: false
-  },
-  {
-    type: FilterType.PAST,
-    isChoosen: false,
-    isDisabled: false
-  },
-];
-
 const EmptyMessage = {
   [FilterType.EVERYTHING]: 'Click New Event to create your first point',
   [FilterType.PAST]: 'There are no past events now',
@@ -151,7 +128,6 @@ export {
   DATE_TIME_FORMAT,
   TIME_FORMAT,
   BLANK_TRIP_EVENT,
-  FILTERS,
   EmptyMessage,
   FilterType,
   sorts,
