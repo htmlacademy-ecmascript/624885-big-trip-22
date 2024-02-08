@@ -48,10 +48,10 @@ const sorting = {
   [SortType.PRICE]: (tripEvents) => [...tripEvents].sort(sortPriceAscending),
 };
 
-const isTripEventPresent = (tripEvent) => dayjs().isAfter(tripEvent.startTime, 'day') &&
-  dayjs().isBefore(tripEvent.endTime, 'day');
-const isTripEventFuture = (tripEvent) => dayjs().isBefore(tripEvent.startTime, 'day');
-const isTripEventPast = (tripEvent) => dayjs().isAfter(tripEvent.endTime, 'day');
+const isTripEventPresent = (tripEvent) => dayjs().isAfter(tripEvent.startTime) &&
+  dayjs().isBefore(tripEvent.endTime,);
+const isTripEventFuture = (tripEvent) => dayjs().isBefore(tripEvent.startTime);
+const isTripEventPast = (tripEvent) => dayjs().isAfter(tripEvent.endTime);
 const filtering = {
   [FilterType.EVERYTHING]: (tripEvents) => [...tripEvents],
   [FilterType.FUTURE]: (tripEvents) => tripEvents.filter(isTripEventFuture),
@@ -65,7 +65,7 @@ const isMinorChange = (tripEventA, tripEventB) => tripEventA.startTime !== tripE
 
 const checkPriceIsNumeric = (price) => /^\d+$/.test(+price);
 
-const capitalize = (str) => str[0].toUpperCase() + str.slice(1);
+const capitalize = (string) => string[0].toUpperCase() + string.slice(1);
 
 const getTripDates = (tripEvents) => {
   if(tripEvents.length === 0) {

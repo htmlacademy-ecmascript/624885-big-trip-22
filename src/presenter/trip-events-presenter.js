@@ -22,6 +22,7 @@ export default class TripEventsPresenter {
   #destinationModel = null;
   #filterModel = null;
   #offerModel = null;
+  #newEventButtonComponent = null;
 
   #tripEventPresenters = new Map();
 
@@ -44,7 +45,8 @@ export default class TripEventsPresenter {
     destinationModel,
     filterModel,
     offerModel,
-    onNewTripEventDestroy
+    onNewTripEventDestroy,
+    newEventButtonComponent
   }) {
     this.#tripEventsContainer = tripEventsContainer;
     this.#tripEventModel = tripEventModel;
@@ -52,6 +54,7 @@ export default class TripEventsPresenter {
     this.#filterModel = filterModel;
     this.#offerModel = offerModel;
     this.#onNewTripEventDestroy = onNewTripEventDestroy;
+    this.#newEventButtonComponent = newEventButtonComponent;
 
     this.#tripEventModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -186,11 +189,13 @@ export default class TripEventsPresenter {
         this.#isLoading = false;
         remove(this.#loadingComponent);
         this.#renderBoard();
+        this.#newEventButtonComponent.element.disabled = false;
         break;
       case UpdateType.ERROR:
         this.#isLoading = false;
         remove(this.#loadingComponent);
         this.#renderFailedLoadData();
+        this.#newEventButtonComponent.element.disabled = true;
     }
 
   };

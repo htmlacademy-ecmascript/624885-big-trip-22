@@ -227,7 +227,7 @@ export default class EditFormView extends AbstractStatefulView {
   _restoreHandlers() {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteClickHandler);
-    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationInputHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
     this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offerChangeHandler);
@@ -284,7 +284,7 @@ export default class EditFormView extends AbstractStatefulView {
     this.#handleDeleteClick(EditFormView.parseStateToTripEvent(this._state));
   };
 
-  #destinationInputHandler = (evt) => {
+  #destinationChangeHandler = (evt) => {
     evt.preventDefault();
     evt.target.setCustomValidity('');
     const updatedDestination = this.#destinationsList.find((value) => value.name === evt.target.value);
