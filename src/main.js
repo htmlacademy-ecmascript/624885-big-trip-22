@@ -28,18 +28,21 @@ const headerPresenter = new HeaderPresenter({
   filterModel,
   tripEventModel,
 });
+
+const newEventButtonComponent = new NewEventButtonView({
+  onClick: handleNewEventButtonClick
+});
+
 const tripEventsPresenter = new TripEventsPresenter({
   tripEventsContainer: siteMainElement,
   tripEventModel,
   destinationModel,
   filterModel,
   offerModel,
-  onNewTripEventDestroy: handleNewEventDestroy
+  onNewTripEventDestroy: handleNewEventDestroy,
+  newEventButtonComponent
 });
 
-const newEventButtonComponent = new NewEventButtonView({
-  onClick: handleNewEventButtonClick
-});
 function handleNewEventButtonClick() {
   tripEventsPresenter.createTripEvent();
   newEventButtonComponent.element.disabled = true;
